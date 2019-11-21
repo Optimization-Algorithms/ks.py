@@ -14,9 +14,13 @@ def parse_args():
 
 def main():
     args = parse_args()
-    sol = kernel_search(args.mps, None)
-    print(sol.value)
-    print(sol.vars)
+    try:
+        sol = kernel_search(args.mps, None)
+    except ValueError as err:
+        print(err)
+    else:
+        print(sol.value)
+        print(sol.vars)
 
 
 if __name__ == "__main__":
