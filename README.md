@@ -1,3 +1,3 @@
 # ks.py
 
-100% Python Kernel Search implementation 
+A Python Kernel Search implementation 
