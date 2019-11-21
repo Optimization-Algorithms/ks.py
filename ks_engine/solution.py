@@ -24,3 +24,6 @@ class Solution:
             out = self if self.value > other.value else other
         
         return out
+
+    def get_value(self, name):
+        return self.vars[name]

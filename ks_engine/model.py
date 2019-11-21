@@ -7,10 +7,7 @@ import gurobipy
 from .solution import Solution
 
 
-
-Variable = namedtuple('Variable', ['name', 'value', 'selected'])
-
-
+Variable = namedtuple('Variable', ['value', 'selected'])
 
 class Model:
 
@@ -32,9 +29,9 @@ class Model:
 
     
     def disable_variables(self, base_kernel, value=0):
-        for var in filter(lambda var: not var.selected, base_kernel):
-            name = self.model.getVarByName(var.name)
-            self.model.addConstr(name == value)
+        for name, _ in filter(lambda x: not x[1].selected, base_kernel.items()):
+            var = self.model.getVarByName(name)
+            self.model.addConstr(var == value)
         
 
     def build_solution(self):
@@ -46,15 +43,15 @@ class Model:
             gen = self._lp_variables_()
         else:
             gen = self._int_variables_()
-        return list(gen)
+        return dict(gen)
 
     def _lp_variables_(self):
         for var in self.model.getVars():
             if var.x == 0:
-                yield Variable(var.varName, var.rc, False)
+                yield var.varName, Variable(var.rc, False)
             else:
-                yield Variable(var.varName, var.rc, True)
+                yield var.varName, Variable(var.x, True)
     
     def _int_variables_(self):
         for var in self.model.getVars():
-            yield Variable(var.varName, var.x, True)
+            yield var.varName, Variable(var.x, True)

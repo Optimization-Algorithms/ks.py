@@ -15,7 +15,7 @@ def parse_args():
 def main():
     args = parse_args()
     try:
-        sol = kernel_search(args.mps, None)
+        sol = kernel_search(args.mps, None, None)
     except ValueError as err:
         print(err)
     else:
