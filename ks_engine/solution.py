@@ -4,9 +4,10 @@
 
 from enum import Enum
 
+
 class Direction(Enum):
     MINIMIZE = 0
-    MAXIMIZE = 1 
+    MAXIMIZE = 1
 
 
 class Solution:
@@ -22,7 +23,7 @@ class Solution:
             out = self if self.value < other.value else other
         else:
             out = self if self.value > other.value else other
-        
+
         return out
 
     def get_value(self, name):

@@ -5,10 +5,11 @@
 from argparse import ArgumentParser
 from ks_engine import *
 
+
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument('mps', help="Instance MPS file")
-    parser.add_argument('-c', '--config', help="YAML Configuration File")
+    parser.add_argument("mps", help="Instance MPS file")
+    parser.add_argument("-c", "--config", help="YAML Configuration File")
 
     return parser.parse_args()
 
@@ -27,4 +28,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

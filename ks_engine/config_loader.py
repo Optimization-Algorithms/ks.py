@@ -5,18 +5,21 @@
 from yaml import safe_load
 
 
-DEFAULT_CONF = {    
-    'TIME_LIMIT': -1,
-    'NUM_THREAD': -1,
-    'MIN_GAP': 0.0,
-    'BUCKET_SIZE': 10,
+DEFAULT_CONF = {
+    "TIME_LIMIT": -1,
+    "NUM_THREAD": -1,
+    "MIN_GAP": 0.0,
+    "BUCKET_SIZE": 10,
 }
+
 
 def check_config(conf):
     for k, v in DEFAULT_CONF.items():
         c = conf[k]
         if not (type(c) is type(v)):
-            raise ValueError(f'Configuration Error: {k} should be an {type(v)} found {type(c)} instead')
+            raise ValueError(
+                f"Configuration Error: {k} should be an {type(v)} found {type(c)} instead"
+            )
 
 
 def load_config(file_name):
@@ -29,6 +32,3 @@ def load_config(file_name):
     out = {**conf, **DEFAULT_CONF}
     check_config(out)
     return conf
-
-
-
