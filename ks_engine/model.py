@@ -43,6 +43,14 @@ class Model:
             self.model.addConstr(var == value)
         
 
+    def add_bucket_contraints(self, solution, bucket):
+        self.model.addConstr(
+            gurobipy.quicksum(self.model.getVarByName(var) for var in bucket) >= 1
+        )
+
+        self.model.getEnv().set(gurobipy.GRB.DoubleParam.Cutoff, solution.value)
+
+
     def build_solution(self):
         gen = ((var.varName, var.x) for var in self.model.getVars())
         return Solution(self.model.objVal, gen)
