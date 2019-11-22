@@ -18,10 +18,16 @@ class Variable:
         self.selected = selected
 
 
+def create_env(config):
+    env = gurobipy.Env()
+    env.setParam("OutputFlag", 0)
+
+    return env
+
 class Model:
 
     def __init__(self, mps_file, config, linear_relax=False):
-        self.model = gurobipy.read(mps_file)
+        self.model = gurobipy.read(mps_file, env=create_env(config))
         self.relax = linear_relax
         if linear_relax:
             self.model = self.model.relax()
