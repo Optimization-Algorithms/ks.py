@@ -10,7 +10,13 @@ except ImportError:
     pass
 
 from .solution import Solution
+from .config_loader import DEFAULT_CONF
 
+GUROBI_PARAMS = {   
+    'TIME_LIMIT': 'TimeLimit',
+    'NUM_THREAD': 'Threads',
+    'MIN_GAP': 'MIPGap',
+}
 
 class Variable:
     def __init__(self, value, selected):
@@ -21,6 +27,12 @@ class Variable:
 def create_env(config):
     env = gurobipy.Env()
     env.setParam("OutputFlag", 0)
+    
+    for k, v in GUROBI_PARAMS.items():
+        def_val = DEFAULT_CONF[k]
+        conf = config[k]
+        if conf != def_val:
+            env.setParam(v, conf)
 
     return env
 
