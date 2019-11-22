@@ -3,7 +3,7 @@
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
 from argparse import ArgumentParser
-from ks_engine import kernel_search
+from ks_engine import kernel_search, base_bucket_builder
 
 def parse_args():
     parser = ArgumentParser()
@@ -15,7 +15,7 @@ def parse_args():
 def main():
     args = parse_args()
     try:
-        sol = kernel_search(args.mps, None, None)
+        sol = kernel_search(args.mps, {'BUCKET_SIZE': 10}, base_bucket_builder)
     except ValueError as err:
         print(err)
     else:

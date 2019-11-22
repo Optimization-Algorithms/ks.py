@@ -48,7 +48,7 @@ class Model:
             gurobipy.quicksum(self.model.getVarByName(var) for var in bucket) >= 1
         )
 
-        self.model.getEnv().set(gurobipy.GRB.DoubleParam.Cutoff, solution.value)
+        self.model.setParam('Cutoff', solution.value)
 
 
     def build_solution(self):

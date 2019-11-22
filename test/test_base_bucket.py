@@ -37,12 +37,12 @@ class TestBaseBucket(unittest.TestCase):
         out of the kernel
         """
 
+        config = {'BUCKET_SIZE': 13}
         count = 0
-        size = 13
         kernel = build_kernel()
-        for bucket in base_bucket_builder(kernel, size):
+        for bucket in base_bucket_builder(kernel, config):
             count += 1
-            self.assertEqual(len(bucket), size)
+            self.assertEqual(len(bucket), config['BUCKET_SIZE'])
         self.assertEqual(count, 2)
 
     def test_buckets_wrong_size(self):
@@ -52,10 +52,10 @@ class TestBaseBucket(unittest.TestCase):
         out of the kernel
         """
 
-        size = 10
+        config = {'BUCKET_SIZE': 10}
         sizes = [10, 10, 6]
         kernel = build_kernel()
-        buckets = base_bucket_builder(kernel, size)
+        buckets = base_bucket_builder(kernel, config)
         for bucket, length in zip(buckets, sizes):
             self.assertEqual(len(bucket), length)
 

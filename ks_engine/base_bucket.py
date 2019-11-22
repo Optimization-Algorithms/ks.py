@@ -9,9 +9,10 @@ def get_bucket_variables(kernel: dict):
     return tmp
 
 
-def base_bucket_builder(kernel: dict, size):
+def base_bucket_builder(kernel: dict, config):
     variables = get_bucket_variables(kernel)
     length = len(variables)
+    size = config['BUCKET_SIZE']
     start = 0
     while start < length:
         end = start + size

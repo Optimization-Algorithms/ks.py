@@ -43,13 +43,13 @@ def run_extension(mps_file, config, kernel, bucket, solution):
 
 def kernel_search(mps_file, config, bucket_builder):
     curr_sol, base_kernel = init_kernel(mps_file, config)
-    buckets = bucket_builder(base_kernel)
+    buckets = bucket_builder(base_kernel, config)
     for buck in buckets:
         select_vars(base_kernel, buck)
-        sol = run_extension(mps_file, config, kernel, bucket, curr_sol)
+        sol = run_extension(mps_file, config, base_kernel, buck, curr_sol)
         if sol:
             curr_sol = sol
-        update_kernel(base_kernel, buck, solution)
+        update_kernel(base_kernel, buck, curr_sol, 0)
         
 
     return curr_sol
