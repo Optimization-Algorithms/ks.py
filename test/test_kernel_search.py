@@ -1,5 +1,7 @@
 #! /usr/bin/python
 
+# Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
+
 import unittest
 from string import ascii_letters, ascii_lowercase, ascii_uppercase
 

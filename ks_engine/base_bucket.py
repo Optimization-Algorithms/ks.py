@@ -1,5 +1,6 @@
 #! /usr/bin/python
 
+# Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
 
 def get_bucket_variables(kernel: dict):
