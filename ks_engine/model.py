@@ -2,12 +2,21 @@
 
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
-from collections import namedtuple
-import gurobipy
+
+try:
+    import gurobipy
+except ImportError:
+    # for test purposes
+    pass
+
 from .solution import Solution
 
 
-Variable = namedtuple('Variable', ['value', 'selected'])
+class Variable:
+    def __init__(self, value, selected):
+        self.value = value
+        self.selected = selected
+
 
 class Model:
 
