@@ -23,7 +23,7 @@ class Variable:
     def __init__(self, value, selected):
         self.value = value
         self.selected = selected
-
+       
 
 def create_env(config):
     env = gurobipy.Env()
@@ -40,12 +40,18 @@ def create_env(config):
 
 class Model:
     def __init__(self, mps_file, config, linear_relax=False):
+        self.solution = None
         self.model = gurobipy.read(mps_file, env=create_env(config))
         self.relax = linear_relax
         if linear_relax:
             self.model = self.model.relax()
 
     def run(self):
+
+        if self.solution:
+            for name, value in self.solution.vars.items():
+                self.model.getVarByName(name).start = value
+
         self.model.optimize()
         return self.model.status == gurobipy.GRB.Status.OPTIMAL
 
