@@ -34,6 +34,7 @@ def run_extension(mps_file, config, kernel, bucket, solution):
     model = Model(mps_file, config)
     model.disable_variables(kernel)
     model.add_bucket_contraints(solution, bucket)
+    model.preload_solution(solution)
     if not model.run():
         return None
 

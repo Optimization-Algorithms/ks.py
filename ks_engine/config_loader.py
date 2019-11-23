@@ -10,6 +10,7 @@ DEFAULT_CONF = {
     "NUM_THREAD": -1,
     "MIN_GAP": 0.0,
     "BUCKET_SIZE": 10,
+    "PRELOAD": True,
 }
 
 
@@ -29,6 +30,6 @@ def load_config(file_name):
     with open(file_name) as file:
         conf = safe_load(file)
 
-    out = {**conf, **DEFAULT_CONF}
+    out = {**DEFAULT_CONF, **conf}
     check_config(out)
-    return conf
+    return out

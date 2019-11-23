@@ -40,25 +40,24 @@ def create_env(config):
 
 class Model:
     def __init__(self, mps_file, config, linear_relax=False):
-        self.solution = None
+
+        self.preload = config["PRELOAD"]
+
         self.model = gurobipy.read(mps_file, env=create_env(config))
         self.relax = linear_relax
         if linear_relax:
             self.model = self.model.relax()
 
+    def preload_solution(self, sol):
+        if not self.preload:
+            return
+
+        for name, value in sol.vars.items():
+            self.model.getVarByName(name).start = value
+
     def run(self):
-
-        if self.solution:
-            for name, value in self.solution.vars.items():
-                self.model.getVarByName(name).start = value
-
         self.model.optimize()
         return self.model.status == gurobipy.GRB.Status.OPTIMAL
-
-    def remove_variable(self, kernel, value=0):
-        variables = self.model.getVars()
-        for var in filter(lambda x: x not in kernel, variables):
-            self.model.addConstr(var == value)
 
     def disable_variables(self, base_kernel, value=0):
         for name, _ in filter(lambda x: not x[1].selected, base_kernel.items()):
