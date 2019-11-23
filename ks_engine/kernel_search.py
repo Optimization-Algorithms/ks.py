@@ -10,8 +10,10 @@ def init_kernel(mps_file, config):
     if not lp_model.run():
         raise ValueError(f"Given Problem: {mps_file} has no LP solution")
     base_kernel = lp_model.get_variables()
+    tmp_sol = lp_model.build_solution()
 
     int_model = Model(mps_file, config, False)
+    int_model.preload_solution(tmp_sol)
     int_model.disable_variables(base_kernel)
     if not int_model.run():
         raise ValueError(f"Given Problem: {mps_file} has no Initial reduction solution")
