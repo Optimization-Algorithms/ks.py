@@ -17,8 +17,9 @@ def parse_args():
 def main():
     args = parse_args()
     conf = load_config(args.config)
+    bucket_gen = get_bucket(conf['BUCKET'])
     try:
-        sol = kernel_search(args.mps, conf, decresing_size_bucket)
+        sol = kernel_search(args.mps, conf, bucket_gen)
     except ValueError as err:
         print(err)
     else:

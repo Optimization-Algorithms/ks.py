@@ -7,7 +7,7 @@ import unittest
 from string import ascii_letters
 from secrets import randbelow
 
-from ks_engine.base_bucket import fixed_size_bucket, get_bucket_variables, decresing_size_bucket
+from ks_engine.bucket_utils.base_bucket import fixed_size_bucket, get_bucket_variables, decresing_size_bucket
 from ks_engine.model import Variable
 
 
