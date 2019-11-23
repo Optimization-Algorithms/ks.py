@@ -17,10 +17,11 @@ class TestConfigLoader(unittest.TestCase):
             "TIME_LIMIT": 1245,
             "NUM_THREAD": 4,
             "MIN_GAP": 1e-10,
-            "BUCKET_SIZE": 45,
+            "BUCKET": "Some name",
         }
+        corr_conf = {**DEFAULT_CONF, **corr_conf}
         try:
-            check_config(DEFAULT_CONF)
+            check_config(corr_conf)
         except ValueError as err:
             self.assertTrue(False, err.args)
 
@@ -29,10 +30,11 @@ class TestConfigLoader(unittest.TestCase):
             "TIME_LIMIT": 1245,
             "NUM_THREAD": 4,
             "MIN_GAP": 1e-10,
-            "BUCKET_SIZE": 4.5,
+            "BUCKET": 4.5,
+            "BUCKET_CONF": {},
         }
-
-        with self.assertRaisesRegex(ValueError, "Configuration Error: BUCKET_SIZE"):
+        broken_conf = {**DEFAULT_CONF, **broken_conf}
+        with self.assertRaisesRegex(ValueError, "Configuration Error: BUCKET"):
             check_config(broken_conf)
 
 

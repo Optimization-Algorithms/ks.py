@@ -18,12 +18,12 @@ def main():
     args = parse_args()
     conf = load_config(args.config)
     try:
-        sol = kernel_search(args.mps, conf, base_bucket_builder)
+        sol = kernel_search(args.mps, conf, decresing_size_bucket)
     except ValueError as err:
         print(err)
     else:
         print(sol.value)
-        print(sol.vars)
+        #print(sol.vars)
 
 
 if __name__ == "__main__":

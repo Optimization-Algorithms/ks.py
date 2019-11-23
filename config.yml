@@ -1,1 +1,3 @@
-PRELOAD: off
+PRELOAD: on
+BUCKET_CONF:
+  count: 5

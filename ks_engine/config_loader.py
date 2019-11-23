@@ -9,7 +9,8 @@ DEFAULT_CONF = {
     "TIME_LIMIT": -1,
     "NUM_THREAD": -1,
     "MIN_GAP": 0.0,
-    "BUCKET_SIZE": 10,
+    "BUCKET": "fixed size",
+    "BUCKET_CONF": {"size": 10},
     "PRELOAD": True,
 }
 
