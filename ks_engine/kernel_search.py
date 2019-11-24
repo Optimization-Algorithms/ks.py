@@ -47,6 +47,41 @@ def run_extension(mps_file, config, kernel, bucket, solution):
 
 
 def kernel_search(mps_file, config, kernel_builder, bucket_builder):
+    """
+    Run Kernel Search Heuristic
+
+    Parameters
+    ----------
+    mps_file : str
+        The MIP problem instance file.
+
+    config : dict
+        Kernel Search configuration
+
+    kernel_builder : callable
+        Initial Kernel Generator
+
+    bucket_builder : callable
+        Buckets Generator
+
+
+    Raises
+    ------
+    ValueError
+        When the LP relaxation or the initial kernel 
+        are unsolvable. In this case no feasible solution
+        are available
+
+    Returns
+    -------
+    Value : float
+        Objective function value
+
+    Variables: dict 
+        Map variable name into its value
+        in the solution
+
+    """
     curr_sol, base_kernel, values = init_kernel(mps_file, config, kernel_builder)
     buckets = bucket_builder(base_kernel, values, **config["BUCKET_CONF"])
     for buck in buckets:

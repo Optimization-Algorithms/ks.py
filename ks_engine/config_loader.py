@@ -28,6 +28,28 @@ def check_config(conf):
 
 
 def load_config(file_name):
+    """
+    Load the configuration from the given file.
+
+    Parameters
+    ----------
+    file_name : str
+        path to the YAML configuration file
+
+    Raises
+    ------
+    ValueError
+        if some variable in the given configuration 
+        does not  have the same type of the variables 
+        in the default configuration. Other variables 
+        are not checked.
+    
+    Returns
+    -------
+    config: dict
+        map configuration variable name into 
+        their values
+    """
     if not file_name:
         return DEFAULT_CONF
 
