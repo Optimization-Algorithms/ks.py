@@ -1,4 +1,5 @@
-PRELOAD: on
+PRELOAD: off
+
 BUCKET: 'decrease'
 BUCKET_CONF:
   count: 5

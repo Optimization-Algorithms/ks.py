@@ -2,10 +2,11 @@
 
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
-from .base_kernel import base_kernel_builder
+from .base_kernel import base_kernel_builder, percentage_better_kernel_builder
 
 KERNELS = {
     "base": base_kernel_builder,
+    "percent best": percentage_better_kernel_builder
 }
 
 def install_kernel_builder(name, function):

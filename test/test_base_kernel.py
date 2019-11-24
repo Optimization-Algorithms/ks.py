@@ -30,8 +30,15 @@ class TestKernelBuilder(unittest.TestCase):
         kernel, values = build_kernel()
         kernel = percentage_better_kernel_builder(kernel, values, 0.75)
         # 13 * 0.75 = 9.75 -> 9
-        self.assertEqual(len(kernel), 9)
-        self.assertEqual(kernel, ['y', 'w', 'u', 's', 'q', 'o', 'm', 'k', 'i'])        
+        self.assertEqual(len(kernel), len(ascii_lowercase))
+        count = 0
+        for v in kernel.values():
+            if v:
+                count += 1
+        self.assertEqual(count, 9)
+        for k in ['y', 'w', 'u', 's', 'q', 'o', 'm', 'k', 'i']:
+            self.assertTrue(kernel[k])
+                
 
 
 

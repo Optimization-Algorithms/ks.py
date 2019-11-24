@@ -10,6 +10,7 @@ DEFAULT_CONF = {
     "NUM_THREAD": -1,
     "MIN_GAP": 0.0,
     "KERNEL": "base",
+    "KERNEL_CONF": {},
     "BUCKET": "fixed",
     "BUCKET_CONF": {"size": 10},
     "PRELOAD": True,

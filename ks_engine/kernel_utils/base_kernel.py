@@ -16,8 +16,10 @@ def sort_base_variables(base, values):
 
 def percentage_better_kernel_builder(base, value, percentage):
     kernel_vars = sort_base_variables(base, value)
-    amount = math.floor(len(kernel_vars) * percentage)
-    return kernel_vars[:amount]
+    last_taken = math.floor(len(kernel_vars) * percentage)
+    for name in kernel_vars[last_taken:]:
+        base[name] = False
+    return base
 
 
 
