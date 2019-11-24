@@ -8,28 +8,29 @@ from string import ascii_letters
 from secrets import randbelow
 
 from ks_engine.bucket_utils.base_bucket import fixed_size_bucket, get_bucket_variables, decresing_size_bucket
-from ks_engine.model import Variable
+from ks_engine.solution import Solution
 
 
-def build_kernel():
+def build_kernel_fixed_size():
     kernel = {
-        k: Variable(randbelow(10 * len(ascii_letters)), i % 2 == 0)
+        k:  i % 2 == 0
         for i, k in enumerate(ascii_letters)
     }
-    return kernel
+    values = Solution(0, ((k, randbelow(100)) for k in ascii_letters))
+    return kernel, values
 
 
 class TestBucketSorting(unittest.TestCase):
     def test_sorter(self):
-        kernel = build_kernel()
-        bucket_vars = get_bucket_variables(kernel)
+        kernel, values = build_kernel_fixed_size()
+        bucket_vars = get_bucket_variables(kernel, values)
         self.assertEqual(len(bucket_vars), len(ascii_letters) // 2)
 
         prev = None
         for var in bucket_vars:
             if prev:
-                self.assertLessEqual(prev, kernel[var].value)
-            prev = kernel[var].value
+                self.assertLessEqual(prev, values.get_value(var))
+            prev = values.get_value(var)
 
 
 class TestBaseBucket(unittest.TestCase):
@@ -42,8 +43,8 @@ class TestBaseBucket(unittest.TestCase):
 
         config = {"size": 13}
         count = 0
-        kernel = build_kernel()
-        for bucket in fixed_size_bucket(kernel, **config):
+        kernel, values = build_kernel_fixed_size()
+        for bucket in fixed_size_bucket(kernel, values, **config):
             count += 1
             self.assertEqual(len(bucket), config["size"])
         self.assertEqual(count, 2)
@@ -57,8 +58,8 @@ class TestBaseBucket(unittest.TestCase):
 
         config = {"size": 10}
         sizes = [10, 10, 6]
-        kernel = build_kernel()
-        buckets = fixed_size_bucket(kernel, **config)
+        kernel, values = build_kernel_fixed_size()
+        buckets = fixed_size_bucket(kernel, values, **config)
         for bucket, length in zip(buckets, sizes):
             self.assertEqual(len(bucket), length)
 
@@ -67,9 +68,10 @@ class TestVariableSizeBucket(unittest.TestCase):
     def test_buckets_correct_size(self):
         config = {"count": 2}
         count = 0
-        kernel = {k: Variable(randbelow(100), False) for k in range(9)}
+        kernel = {k: False for k in range(9)}
+        values = Solution(0.0, ((k, randbelow(100)) for k in range(9)))
         sizes = [6, 3]
-        for bucket, length in zip(decresing_size_bucket(kernel, **config), sizes):
+        for bucket, length in zip(decresing_size_bucket(kernel, values, **config), sizes):
             count += 1
             self.assertEqual(len(bucket), length)
         self.assertEqual(count, 2)
@@ -78,9 +80,10 @@ class TestVariableSizeBucket(unittest.TestCase):
     def test_buckets_wrong_size(self):
         config = {"count": 2}
         count = 0
-        kernel = {k: Variable(randbelow(100), False) for k in range(10)}
+        kernel = {k: False for k in range(10)}
+        values = Solution(0.0, ((k, randbelow(100)) for k in range(10)))
         sizes = [6, 3, 1]
-        for bucket, length in zip(decresing_size_bucket(kernel, **config), sizes):
+        for bucket, length in zip(decresing_size_bucket(kernel, values, **config), sizes):
             count += 1
             self.assertEqual(len(bucket), length)
         self.assertEqual(count, 3)  

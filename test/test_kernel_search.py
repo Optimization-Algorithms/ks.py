@@ -16,13 +16,13 @@ class TestBucketSelection(unittest.TestCase):
         select_vars(kernel, first_bucket)
 
         for l in ascii_lowercase:
-            self.assertTrue(kernel[l].selected, l)
+            self.assertTrue(kernel[l], l)
 
         for i, l in enumerate(ascii_uppercase):
             if i % 2:
-                self.assertFalse(kernel[l].selected, l)
+                self.assertFalse(kernel[l], l)
             else:
-                self.assertTrue(kernel[l].selected, l)
+                self.assertTrue(kernel[l], l)
 
     def test_update_kernel(self):
         kernel, first_bucket = self._make_kernel()
@@ -36,9 +36,9 @@ class TestBucketSelection(unittest.TestCase):
 
         for l in ascii_lowercase:
             if l in selected_vars:
-                self.assertTrue(kernel[l].selected, l)
+                self.assertTrue(kernel[l], l)
             else:
-                self.assertFalse(kernel[l].selected, l)
+                self.assertFalse(kernel[l], l)
 
     def _build_solution(self, bucket):
         gen = ((letter, int(index < 4)) for index, letter in enumerate(bucket))
@@ -46,7 +46,7 @@ class TestBucketSelection(unittest.TestCase):
 
     def _make_kernel(self):
         kernel = {
-            letter: model.Variable(1.0, index % 2 == 0)
+            letter: index % 2 == 0
             for index, letter in enumerate(ascii_letters)
         }
 

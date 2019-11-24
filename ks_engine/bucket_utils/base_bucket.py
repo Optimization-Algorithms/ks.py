@@ -4,14 +4,14 @@
 
 import math
 
-def get_bucket_variables(kernel: dict):
-    tmp = [k for k, v in kernel.items() if not v.selected]
-    tmp.sort(key=lambda x: kernel[x].value)
+def get_bucket_variables(kernel: dict, values):
+    tmp = [k for k, v in kernel.items() if not v]
+    tmp.sort(key=lambda x: values.get_value(x))
     return tmp
 
 
-def fixed_size_bucket(kernel: dict, size):
-    variables = get_bucket_variables(kernel)
+def fixed_size_bucket(kernel: dict, values, size):
+    variables = get_bucket_variables(kernel, values)
     length = len(variables)
     start = 0
     while start < length:
@@ -20,10 +20,10 @@ def fixed_size_bucket(kernel: dict, size):
         start = end
 
 
-def decresing_size_bucket(kernel: dict, count):
+def decresing_size_bucket(kernel: dict, values, count):
     
     blocks = sum(1 << i for i in range(count))
-    variables = get_bucket_variables(kernel)
+    variables = get_bucket_variables(kernel, values)
     length = len(variables)
     size = math.floor(length / blocks)
     start = 0

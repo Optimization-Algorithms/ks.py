@@ -6,3 +6,4 @@
 from .kernel_search import kernel_search
 from .config_loader import load_config
 from .bucket_utils import *
+from .kernel_utils import *

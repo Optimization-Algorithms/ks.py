@@ -19,12 +19,6 @@ GUROBI_PARAMS = {
 }
 
 
-class Variable:
-    def __init__(self, value, selected):
-        self.value = value
-        self.selected = selected
-       
-
 def create_env(config):
     env = gurobipy.Env()
     env.setParam("OutputFlag", 0)
@@ -60,7 +54,7 @@ class Model:
         return self.model.status == gurobipy.GRB.Status.OPTIMAL
 
     def disable_variables(self, base_kernel, value=0):
-        for name, _ in filter(lambda x: not x[1].selected, base_kernel.items()):
+        for name, _ in filter(lambda x: not x[1], base_kernel.items()):
             var = self.model.getVarByName(name)
             self.model.addConstr(var == value)
 
@@ -75,20 +69,17 @@ class Model:
         gen = ((var.varName, var.x) for var in self.model.getVars())
         return Solution(self.model.objVal, gen)
 
-    def get_variables(self):
-        if self.relax:
-            gen = self._lp_variables_()
-        else:
-            gen = self._int_variables_()
+    def get_base_variables(self, null_value=0.0):
+        gen = ((var.varName, var.x != null_value) for var in self.model.getVars())
         return dict(gen)
 
-    def _lp_variables_(self):
-        for var in self.model.getVars():
-            if var.x == 0:
-                yield var.varName, Variable(var.rc, False)
-            else:
-                yield var.varName, Variable(var.x, True)
+    def build_lp_solution(self, null_value=0.0):
+        gen = self._lp_sol_generator(null_value)
+        return Solution(self.model.objVal, gen)
 
-    def _int_variables_(self):
+    def _lp_sol_generator(self, null_value):
         for var in self.model.getVars():
-            yield var.varName, Variable(var.x, True)
+            if var.x == null_value:
+                yield var.varName, var.rc
+            else:
+                yield var.varName, var.x
