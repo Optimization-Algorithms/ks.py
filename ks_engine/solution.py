@@ -2,8 +2,8 @@
 
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
-class Solution:
 
+class Solution:
     def __init__(self, value, var_iter):
         self.vars = {k: v for k, v in var_iter}
         self.value = value

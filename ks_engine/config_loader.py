@@ -14,7 +14,7 @@ DEFAULT_CONF = {
     "BUCKET": "fixed",
     "BUCKET_CONF": {"size": 10},
     "PRELOAD": True,
-    "DEBUG": False
+    "DEBUG": False,
 }
 
 

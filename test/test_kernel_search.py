@@ -45,10 +45,7 @@ class TestBucketSelection(unittest.TestCase):
         return Solution(12, gen)
 
     def _make_kernel(self):
-        kernel = {
-            letter: index % 2 == 0
-            for index, letter in enumerate(ascii_letters)
-        }
+        kernel = {letter: index % 2 == 0 for index, letter in enumerate(ascii_letters)}
 
         first_bucket = [
             letter for i, letter in enumerate(ascii_lowercase) if i % 2 != 0

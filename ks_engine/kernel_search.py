@@ -13,7 +13,7 @@ def init_kernel(mps_file, config, kernel_builder):
     values = lp_model.build_lp_solution()
     tmp_sol = lp_model.build_solution()
 
-    kernel = kernel_builder(base, values, **config['KERNEL_CONF'])
+    kernel = kernel_builder(base, values, **config["KERNEL_CONF"])
 
     int_model = Model(mps_file, config, False)
     int_model.preload_solution(tmp_sol)

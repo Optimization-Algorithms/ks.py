@@ -21,7 +21,7 @@ GUROBI_PARAMS = {
 
 def create_env(config):
     env = gurobipy.Env()
-    if not config['DEBUG']:
+    if not config["DEBUG"]:
         env.setParam("OutputFlag", 0)
 
     for k, v in GUROBI_PARAMS.items():

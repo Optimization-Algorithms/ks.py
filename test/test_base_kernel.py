@@ -3,11 +3,15 @@
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
 
-import unittest 
+import unittest
 from string import ascii_lowercase
 
-from ks_engine.kernel_utils.base_kernel import sort_base_variables, percentage_better_kernel_builder
+from ks_engine.kernel_utils.base_kernel import (
+    sort_base_variables,
+    percentage_better_kernel_builder,
+)
 from ks_engine.solution import Solution
+
 
 def build_kernel():
 
@@ -22,7 +26,10 @@ class TestKernelSorter(unittest.TestCase):
         kernel, values = build_kernel()
         sort_kernel = sort_base_variables(kernel, values)
         self.assertEqual(len(ascii_lowercase) / 2, len(sort_kernel))
-        self.assertEqual(sort_kernel, ['y', 'w', 'u', 's', 'q', 'o', 'm', 'k', 'i', 'g', 'e', 'c', 'a'])
+        self.assertEqual(
+            sort_kernel,
+            ["y", "w", "u", "s", "q", "o", "m", "k", "i", "g", "e", "c", "a"],
+        )
 
 
 class TestKernelBuilder(unittest.TestCase):
@@ -36,12 +43,9 @@ class TestKernelBuilder(unittest.TestCase):
             if v:
                 count += 1
         self.assertEqual(count, 9)
-        for k in ['y', 'w', 'u', 's', 'q', 'o', 'm', 'k', 'i']:
+        for k in ["y", "w", "u", "s", "q", "o", "m", "k", "i"]:
             self.assertTrue(kernel[k])
-                
-
 
 
 if __name__ == "__main__":
     unittest.main()
-

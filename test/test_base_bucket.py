@@ -7,15 +7,16 @@ import unittest
 from string import ascii_letters
 from secrets import randbelow
 
-from ks_engine.bucket_utils.base_bucket import fixed_size_bucket, get_bucket_variables, decresing_size_bucket
+from ks_engine.bucket_utils.base_bucket import (
+    fixed_size_bucket,
+    get_bucket_variables,
+    decresing_size_bucket,
+)
 from ks_engine.solution import Solution
 
 
 def build_kernel_fixed_size():
-    kernel = {
-        k:  i % 2 == 0
-        for i, k in enumerate(ascii_letters)
-    }
+    kernel = {k: i % 2 == 0 for i, k in enumerate(ascii_letters)}
     values = Solution(0, ((k, randbelow(100)) for k in ascii_letters))
     return kernel, values
 
@@ -71,11 +72,12 @@ class TestVariableSizeBucket(unittest.TestCase):
         kernel = {k: False for k in range(9)}
         values = Solution(0.0, ((k, randbelow(100)) for k in range(9)))
         sizes = [6, 3]
-        for bucket, length in zip(decresing_size_bucket(kernel, values, **config), sizes):
+        for bucket, length in zip(
+            decresing_size_bucket(kernel, values, **config), sizes
+        ):
             count += 1
             self.assertEqual(len(bucket), length)
         self.assertEqual(count, 2)
-
 
     def test_buckets_wrong_size(self):
         config = {"count": 2}
@@ -83,10 +85,13 @@ class TestVariableSizeBucket(unittest.TestCase):
         kernel = {k: False for k in range(10)}
         values = Solution(0.0, ((k, randbelow(100)) for k in range(10)))
         sizes = [6, 3, 1]
-        for bucket, length in zip(decresing_size_bucket(kernel, values, **config), sizes):
+        for bucket, length in zip(
+            decresing_size_bucket(kernel, values, **config), sizes
+        ):
             count += 1
             self.assertEqual(len(bucket), length)
-        self.assertEqual(count, 3)  
+        self.assertEqual(count, 3)
+
 
 if __name__ == "__main__":
     unittest.main()
