@@ -44,7 +44,7 @@ class Model:
             self.model = self.model.relax()
 
     def preload_solution(self, sol):
-        if not self.preload:
+        if not self.preload or sol is None:
             return
 
         for name, value in sol.vars.items():
@@ -63,8 +63,8 @@ class Model:
         self.model.addConstr(
             gurobipy.quicksum(self.model.getVarByName(var) for var in bucket) >= 1
         )
-
-        self.model.setParam("Cutoff", solution.value)
+        if solution:
+            self.model.setParam("Cutoff", solution.value)
 
     def build_solution(self):
         gen = ((var.varName, var.x) for var in self.model.getVars())

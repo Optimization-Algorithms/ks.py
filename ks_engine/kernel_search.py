@@ -18,10 +18,12 @@ def init_kernel(mps_file, config, kernel_builder):
     int_model = Model(mps_file, config, False)
     int_model.preload_solution(tmp_sol)
     int_model.disable_variables(kernel)
-    if not int_model.run():
-        raise ValueError(f"Given Problem: {mps_file} has no Initial reduction solution")
+    if int_model.run():
+        out = int_model.build_solution()
+    else:
+        out = None
 
-    return int_model.build_solution(), kernel, values
+    return out, kernel, values
 
 
 def select_vars(base_kernel, bucket):
@@ -40,6 +42,7 @@ def run_extension(mps_file, config, kernel, bucket, solution):
     model.disable_variables(kernel)
     model.add_bucket_contraints(solution, bucket)
     model.preload_solution(solution)
+   
     if not model.run():
         return None
 
@@ -68,8 +71,8 @@ def kernel_search(mps_file, config, kernel_builder, bucket_builder):
     Raises
     ------
     ValueError
-        When the LP relaxation or the initial kernel 
-        are unsolvable. In this case no feasible solution
+        When the LP relaxation is unsolvable.
+        In this case no feasible solution
         are available
 
     Returns
@@ -89,6 +92,6 @@ def kernel_search(mps_file, config, kernel_builder, bucket_builder):
         sol = run_extension(mps_file, config, base_kernel, buck, curr_sol)
         if sol:
             curr_sol = sol
-        update_kernel(base_kernel, buck, curr_sol, 0)
+            update_kernel(base_kernel, buck, curr_sol, 0)
 
     return curr_sol
