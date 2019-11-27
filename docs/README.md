@@ -44,4 +44,5 @@ so it's possible to run tests in a CI environment. Also the solver should be cor
 
 ## Usage
 
-work in progress
+Public API are not fully defined so this section is 
+currently empty.
