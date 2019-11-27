@@ -1,5 +1,5 @@
 PRELOAD: off
-DEBUG: on
+DEBUG: off
 BUCKET: 'decrease'
 BUCKET_CONF:
-  count: 10
+  count: 3
