@@ -22,8 +22,25 @@ both the library and the user difined code.
 
 
 ## Installation
-work in progress
+At the current time there is not any installation script or packages. In any 
+case, in order to work with *ks_engin* is mandatory to install the dependencies 
+using
 
+```bash
+[sudo] pip install requirements.txt
+```
+It is also required to globally install the latest Gurobi version. 
+
+### Tests
+It's possible to test the code using, in the project 
+root directory
+
+```bash
+python -m pytest
+```
+
+Those test does not includes tests for the solver API,
+so it's possible to run tests in a CI environment. Also the solver should be correct. 
 
 ## Usage
 
