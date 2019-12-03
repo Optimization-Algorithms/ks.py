@@ -3,7 +3,10 @@
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
 from .model import Model
+from collections import namedtuple
 
+
+KernelMethods = namedtuple('KernelMethods', ['kernel_sorter', 'kernel_builder', 'bucket_sorter', 'bucket_builder'])
 
 def init_kernel(mps_file, config, kernel_builder):
     lp_model = Model(mps_file, config, True)
@@ -49,7 +52,7 @@ def run_extension(mps_file, config, kernel, bucket, solution):
     return model.build_solution()
 
 
-def kernel_search(mps_file, config, kernel_builder, bucket_builder):
+def kernel_search(mps_file, config, kernel_methods):
     """
     Run Kernel Search Heuristic
 
@@ -85,8 +88,8 @@ def kernel_search(mps_file, config, kernel_builder, bucket_builder):
         in the solution
 
     """
-    curr_sol, base_kernel, values = init_kernel(mps_file, config, kernel_builder)
-    buckets = bucket_builder(base_kernel, values, **config["BUCKET_CONF"])
+    curr_sol, base_kernel, values = init_kernel(mps_file, config, kernel_methods.kernel_builder)
+    buckets = kernel_methods.bucket_builder(base_kernel, values, **config["BUCKET_CONF"])
     for buck in buckets:
         select_vars(base_kernel, buck)
         sol = run_extension(mps_file, config, base_kernel, buck, curr_sol)
