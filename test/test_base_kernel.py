@@ -6,7 +6,7 @@
 import unittest
 from string import ascii_lowercase
 
-from ks_engine.kernel_utils.base_kernel import (
+from ks_engine.kernel_algorithms.base_kernel import (
     sort_base_variables,
     percentage_better_kernel_builder,
 )

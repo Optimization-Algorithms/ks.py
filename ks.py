@@ -17,11 +17,11 @@ def parse_args():
 def main():
     args = parse_args()
     conf = load_config(args.config)
-    bucket_gen = get_bucket(conf["BUCKET"])
-    kernel_gen = get_kernel_builder(conf["KERNEL"])
-    methods = KernelMethods(None, kernel_gen, None, bucket_gen)
+    bucket_gen = bucket_builders.get_algorithm(conf["BUCKET"])
+    kernel_gen = kernel_builders.get_algorithm(conf["KERNEL"])
+    algo = AlgorithContainer(kernel_builder=kernel_gen, bucket_builder=bucket_gen)
     try:
-        sol = kernel_search(args.mps, conf, methods)
+        sol = kernel_search(args.mps, conf, algo)
     except ValueError as err:
         print(err)
     else:

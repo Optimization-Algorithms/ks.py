@@ -31,7 +31,7 @@ bucket_utils
 
 """
 
-from .kernel_search import kernel_search, KernelMethods
+from .kernel_search import kernel_search
 from .config_loader import load_config
-from .bucket_utils import *
-from .kernel_utils import *
+from .algorith_container import AlgorithContainer
+from .kernel_algorithms import *
