@@ -6,10 +6,8 @@
 import unittest
 from string import ascii_lowercase
 
-from ks_engine.kernel_algorithms.base_kernel import (
-    sort_base_variables,
-    percentage_better_kernel_builder,
-)
+from ks_engine.kernel_algorithms.base_kernel import percentage_better_kernel_builder
+from ks_engine.kernel_algorithms.base_sort import kernel_sort
 from ks_engine.solution import Solution
 
 
@@ -24,7 +22,7 @@ def build_kernel():
 class TestKernelSorter(unittest.TestCase):
     def test_kernel_sort(self):
         kernel, values = build_kernel()
-        sort_kernel = sort_base_variables(kernel, values)
+        sort_kernel = kernel_sort(kernel, values)
         self.assertEqual(len(ascii_lowercase) / 2, len(sort_kernel))
         self.assertEqual(
             sort_kernel,
@@ -35,7 +33,7 @@ class TestKernelSorter(unittest.TestCase):
 class TestKernelBuilder(unittest.TestCase):
     def test_kernel_builder(self):
         kernel, values = build_kernel()
-        kernel = percentage_better_kernel_builder(kernel, values, 0.75)
+        kernel = percentage_better_kernel_builder(kernel, values, kernel_sort, 0.75)
         # 13 * 0.75 = 9.75 -> 9
         self.assertEqual(len(kernel), len(ascii_lowercase))
         count = 0

@@ -8,7 +8,7 @@ from collections import namedtuple
 
 KernelMethods = namedtuple('KernelMethods', ['kernel_sorter', 'kernel_builder', 'bucket_sorter', 'bucket_builder'])
 
-def init_kernel(mps_file, config, kernel_builder):
+def init_kernel(mps_file, config, kernel_builder, kernel_sort):
     lp_model = Model(mps_file, config, True)
     if not lp_model.run():
         raise ValueError(f"Given Problem: {mps_file} has no LP solution")
@@ -16,7 +16,7 @@ def init_kernel(mps_file, config, kernel_builder):
     values = lp_model.build_lp_solution()
     tmp_sol = lp_model.build_solution()
 
-    kernel = kernel_builder(base, values, **config["KERNEL_CONF"])
+    kernel = kernel_builder(base, values, kernel_sort, **config["KERNEL_CONF"])
 
     int_model = Model(mps_file, config, False)
     int_model.preload_solution(tmp_sol)
@@ -88,8 +88,9 @@ def kernel_search(mps_file, config, kernel_methods):
         in the solution
 
     """
-    curr_sol, base_kernel, values = init_kernel(mps_file, config, kernel_methods.kernel_builder)
-    buckets = kernel_methods.bucket_builder(base_kernel, values, **config["BUCKET_CONF"])
+    curr_sol, base_kernel, values = init_kernel(mps_file, config, kernel_methods.kernel_builder, kernel_methods.kernel_sort)
+
+    buckets = kernel_methods.bucket_builder(base_kernel, values, kernel_methods.bucket_sort, **config["BUCKET_CONF"])
     for buck in buckets:
         select_vars(base_kernel, buck)
         sol = run_extension(mps_file, config, base_kernel, buck, curr_sol)

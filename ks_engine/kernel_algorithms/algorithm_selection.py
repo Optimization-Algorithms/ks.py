@@ -4,6 +4,7 @@
 
 from .base_bucket import BUCKET_BUILDERS, fixed_size_bucket
 from .base_kernel import KERNEL_BUILDERS, base_kernel_builder
+from .base_sort import *
 
 class Selector:
 
@@ -72,5 +73,8 @@ class Selector:
 
 bucket_builders = Selector(BUCKET_BUILDERS, fixed_size_bucket)
 kernel_builders = Selector(KERNEL_BUILDERS, base_kernel_builder)
+
+kernel_sorters = Selector(KERNEL_SORTERS, kernel_sort)
+bucket_sorters = Selector(BUCKET_SORT, bucket_sort)
 
     
