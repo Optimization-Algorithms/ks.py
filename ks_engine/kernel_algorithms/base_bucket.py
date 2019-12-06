@@ -5,8 +5,8 @@
 import math
 
 
-def fixed_size_bucket(base, values, sorter, size):
-    variables = sorter(base, values)
+def fixed_size_bucket(base, values, sorter, sorter_conf, size):
+    variables = sorter(base, values, **sorter_conf)
     length = len(variables)
     start = 0
     while start < length:
@@ -15,8 +15,8 @@ def fixed_size_bucket(base, values, sorter, size):
         start = end
 
 
-def decresing_size_bucket(base, values, sorter, count):
-    variables = sorter(base, values)
+def decresing_size_bucket(base, values, sorter, sorter_conf, count):
+    variables = sorter(base, values, **sorter_conf)
     blocks = sum(1 << i for i in range(count))
     length = len(variables)
     size = math.floor(length / blocks)

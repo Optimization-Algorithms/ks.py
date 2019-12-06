@@ -18,10 +18,10 @@ def main():
     args = parse_args()
     conf = load_config(args.config)
     bucket_gen = bucket_builders.get_algorithm(conf["BUCKET"])
-    bucket_sort = bucket_sorters.default
+    bucket_sort = bucket_sorters.get_algorithm(conf["BUCKET_SORTER"])
 
     kernel_gen = kernel_builders.get_algorithm(conf["KERNEL"])
-    kernel_sort = kernel_sorters.default
+    kernel_sort = kernel_sorters.get_algorithm(conf["KERNEL_SORTER"])
 
     algo = AlgorithContainer(
         kernel_builder=kernel_gen,

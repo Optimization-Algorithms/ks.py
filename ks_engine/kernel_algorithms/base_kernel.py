@@ -6,12 +6,12 @@
 import math
 
 
-def base_kernel_builder(base, values, sorter):
+def base_kernel_builder(base, values, sorter, sorter_conf):
     return base
 
 
-def percentage_better_kernel_builder(base, value, sorter, percentage):
-    kernel_vars = sorter(base, value)
+def percentage_better_kernel_builder(base, value, sorter, sorter_conf, percentage):
+    kernel_vars = sorter(base, value, **sorter_conf)
     last_taken = math.floor(len(kernel_vars) * percentage)
     for name in kernel_vars[last_taken:]:
         base[name] = False

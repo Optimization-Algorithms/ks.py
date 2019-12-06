@@ -20,7 +20,7 @@ def init_kernel(mps_file, config, kernel_builder, kernel_sort):
     values = lp_model.build_lp_solution()
     tmp_sol = lp_model.build_solution()
 
-    kernel = kernel_builder(base, values, kernel_sort, **config["KERNEL_CONF"])
+    kernel = kernel_builder(base, values, kernel_sort, config["KERNEL_SORTER_CONF"], **config["KERNEL_CONF"])
 
     int_model = Model(mps_file, config, False)
     int_model.preload_solution(tmp_sol)
@@ -97,7 +97,7 @@ def kernel_search(mps_file, config, kernel_methods):
     )
 
     buckets = kernel_methods.bucket_builder(
-        base_kernel, values, kernel_methods.bucket_sort, **config["BUCKET_CONF"]
+        base_kernel, values, kernel_methods.bucket_sort, config["BUCKET_SORTER_CONF"], **config["BUCKET_CONF"]
     )
     for buck in buckets:
         select_vars(base_kernel, buck)

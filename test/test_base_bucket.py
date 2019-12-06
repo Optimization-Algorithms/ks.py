@@ -45,7 +45,7 @@ class TestBaseBucket(unittest.TestCase):
         config = {"size": 13}
         count = 0
         kernel, values = build_kernel_fixed_size()
-        for bucket in fixed_size_bucket(kernel, values, bucket_sort, **config):
+        for bucket in fixed_size_bucket(kernel, values, bucket_sort, {}, **config):
             count += 1
             self.assertEqual(len(bucket), config["size"])
         self.assertEqual(count, 2)
@@ -60,7 +60,7 @@ class TestBaseBucket(unittest.TestCase):
         config = {"size": 10}
         sizes = [10, 10, 6]
         kernel, values = build_kernel_fixed_size()
-        buckets = fixed_size_bucket(kernel, values, bucket_sort, **config)
+        buckets = fixed_size_bucket(kernel, values, bucket_sort, {}, **config)
         for bucket, length in zip(buckets, sizes):
             self.assertEqual(len(bucket), length)
 
@@ -73,7 +73,7 @@ class TestVariableSizeBucket(unittest.TestCase):
         values = Solution(0.0, ((k, randbelow(100)) for k in range(9)))
         sizes = [6, 3]
         for bucket, length in zip(
-            decresing_size_bucket(kernel, values, bucket_sort, **config), sizes
+            decresing_size_bucket(kernel, values, bucket_sort, {}, **config), sizes
         ):
             count += 1
             self.assertEqual(len(bucket), length)
@@ -86,7 +86,7 @@ class TestVariableSizeBucket(unittest.TestCase):
         values = Solution(0.0, ((k, randbelow(100)) for k in range(10)))
         sizes = [6, 3, 1]
         for bucket, length in zip(
-            decresing_size_bucket(kernel, values, bucket_sort, **config), sizes
+            decresing_size_bucket(kernel, values, bucket_sort, {}, **config), sizes
         ):
             count += 1
             self.assertEqual(len(bucket), length)
