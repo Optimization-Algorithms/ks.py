@@ -56,6 +56,16 @@ def run_extension(mps_file, config, kernel, bucket, solution):
     return model.build_solution()
 
 
+def initialize(mps_file, config, kernel_methods):
+    curr_sol, base_kernel, values = init_kernel(
+        mps_file, config, kernel_methods.kernel_builder, kernel_methods.kernel_sort
+    )
+
+    buckets = kernel_methods.bucket_builder(
+        base_kernel, values, kernel_methods.bucket_sort, config["BUCKET_SORTER_CONF"], **config["BUCKET_CONF"]
+    )
+    return curr_sol, base_kernel, buckets
+
 def kernel_search(mps_file, config, kernel_methods):
     """
     Run Kernel Search Heuristic
@@ -68,12 +78,12 @@ def kernel_search(mps_file, config, kernel_methods):
     config : dict
         Kernel Search configuration
 
-    kernel_builder : callable
-        Initial Kernel Generator
-
-    bucket_builder : callable
-        Buckets Generator
-
+    kernel_methods: KernelMethods
+        The collection of four methods:
+            - Kernel Builder
+            - Kernel Sorter
+            - Bucket Builder
+            - Bucket Sorter
 
     Raises
     ------
@@ -92,13 +102,7 @@ def kernel_search(mps_file, config, kernel_methods):
         in the solution
 
     """
-    curr_sol, base_kernel, values = init_kernel(
-        mps_file, config, kernel_methods.kernel_builder, kernel_methods.kernel_sort
-    )
-
-    buckets = kernel_methods.bucket_builder(
-        base_kernel, values, kernel_methods.bucket_sort, config["BUCKET_SORTER_CONF"], **config["BUCKET_CONF"]
-    )
+    curr_sol, base_kernel, buckets = initialize(mps_file, config, kernel_methods)
     for buck in buckets:
         select_vars(base_kernel, buck)
         sol = run_extension(mps_file, config, base_kernel, buck, curr_sol)
