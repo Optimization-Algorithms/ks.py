@@ -44,5 +44,7 @@ so it's possible to run tests in a CI environment. Also the solver should be cor
 
 ## Usage
 
-Public API are not fully defined so this section is 
-currently empty.
+This library can be used out of the box or can be extended to support new algorithms to sort variables, build the base kernel and build the buckets.
+
+* [Direct Usage](base_usage.md)
+* [Extension] (extension.md)
