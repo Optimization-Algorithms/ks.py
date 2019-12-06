@@ -9,12 +9,19 @@ class AlgorithContainer:
     """
     """
 
-    def __init__(self, *, kernel_builder=None, bucket_builder=None, kernel_sort=None, bucket_sort=None):
+    def __init__(
+        self,
+        *,
+        kernel_builder=None,
+        bucket_builder=None,
+        kernel_sort=None,
+        bucket_sort=None
+    ):
         if kernel_builder:
             self.kernel_builder = kernel_builder
         else:
             self.kernel_builder = kernel_builders.default
-    
+
         if bucket_builder:
             self.bucket_builder = bucket_builder
         else:
@@ -29,6 +36,3 @@ class AlgorithContainer:
             self.bucket_sort = bucket_sort
         else:
             self.bucket_sort = None
-
-
-

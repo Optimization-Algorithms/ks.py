@@ -19,11 +19,16 @@ def main():
     conf = load_config(args.config)
     bucket_gen = bucket_builders.get_algorithm(conf["BUCKET"])
     bucket_sort = bucket_sorters.default
-    
+
     kernel_gen = kernel_builders.get_algorithm(conf["KERNEL"])
     kernel_sort = kernel_sorters.default
 
-    algo = AlgorithContainer(kernel_builder=kernel_gen, bucket_builder=bucket_gen, bucket_sort=bucket_sort, kernel_sort=kernel_sort)
+    algo = AlgorithContainer(
+        kernel_builder=kernel_gen,
+        bucket_builder=bucket_gen,
+        bucket_sort=bucket_sort,
+        kernel_sort=kernel_sort,
+    )
     try:
         sol = kernel_search(args.mps, conf, algo)
     except ValueError as err:

@@ -6,7 +6,11 @@ from .model import Model
 from collections import namedtuple
 
 
-KernelMethods = namedtuple('KernelMethods', ['kernel_sorter', 'kernel_builder', 'bucket_sorter', 'bucket_builder'])
+KernelMethods = namedtuple(
+    "KernelMethods",
+    ["kernel_sorter", "kernel_builder", "bucket_sorter", "bucket_builder"],
+)
+
 
 def init_kernel(mps_file, config, kernel_builder, kernel_sort):
     lp_model = Model(mps_file, config, True)
@@ -45,7 +49,7 @@ def run_extension(mps_file, config, kernel, bucket, solution):
     model.disable_variables(kernel)
     model.add_bucket_contraints(solution, bucket)
     model.preload_solution(solution)
-   
+
     if not model.run():
         return None
 
@@ -88,9 +92,13 @@ def kernel_search(mps_file, config, kernel_methods):
         in the solution
 
     """
-    curr_sol, base_kernel, values = init_kernel(mps_file, config, kernel_methods.kernel_builder, kernel_methods.kernel_sort)
+    curr_sol, base_kernel, values = init_kernel(
+        mps_file, config, kernel_methods.kernel_builder, kernel_methods.kernel_sort
+    )
 
-    buckets = kernel_methods.bucket_builder(base_kernel, values, kernel_methods.bucket_sort, **config["BUCKET_CONF"])
+    buckets = kernel_methods.bucket_builder(
+        base_kernel, values, kernel_methods.bucket_sort, **config["BUCKET_CONF"]
+    )
     for buck in buckets:
         select_vars(base_kernel, buck)
         sol = run_extension(mps_file, config, base_kernel, buck, curr_sol)

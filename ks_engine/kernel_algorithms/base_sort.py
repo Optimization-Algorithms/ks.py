@@ -17,11 +17,9 @@ def bucket_sort(kernel: dict, values):
 
 
 KERNEL_SORTERS = {
-    'base_kernel_sort': kernel_sort,
-    
+    "base_kernel_sort": kernel_sort,
 }
 
 BUCKET_SORT = {
-    'base_bucket_sort': bucket_sort,
+    "base_bucket_sort": bucket_sort,
 }
-

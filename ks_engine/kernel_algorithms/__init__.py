@@ -2,4 +2,9 @@
 
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
-from .algorithm_selection import bucket_builders, kernel_builders, kernel_sorters, bucket_sorters
+from .algorithm_selection import (
+    bucket_builders,
+    kernel_builders,
+    kernel_sorters,
+    bucket_sorters,
+)

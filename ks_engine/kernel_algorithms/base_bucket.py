@@ -4,6 +4,7 @@
 
 import math
 
+
 def fixed_size_bucket(base, values, sorter, size):
     variables = sorter(base, values)
     length = len(variables)
@@ -33,7 +34,4 @@ def decresing_size_bucket(base, values, sorter, count):
         blocks >>= 1
 
 
-BUCKET_BUILDERS = {
-    'fixed': fixed_size_bucket,
-    'decrease': decresing_size_bucket
-}
+BUCKET_BUILDERS = {"fixed": fixed_size_bucket, "decrease": decresing_size_bucket}
