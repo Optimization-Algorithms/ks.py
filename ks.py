@@ -23,7 +23,7 @@ def main():
     kernel_gen = kernel_builders.get_algorithm(conf["KERNEL"])
     kernel_sort = kernel_sorters.get_algorithm(conf["KERNEL_SORTER"])
 
-    algo = AlgorithContainer(
+    algo = KernelMethods(
         kernel_builder=kernel_gen,
         bucket_builder=bucket_gen,
         bucket_sort=bucket_sort,

@@ -8,7 +8,7 @@ from collections import namedtuple
 
 KernelMethods = namedtuple(
     "KernelMethods",
-    ["kernel_sorter", "kernel_builder", "bucket_sorter", "bucket_builder"],
+    ["kernel_sort", "kernel_builder", "bucket_sort", "bucket_builder"],
 )
 
 
