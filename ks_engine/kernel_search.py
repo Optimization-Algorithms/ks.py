@@ -57,17 +57,17 @@ def run_extension(mps_file, config, kernel, bucket, solution):
     return model.build_solution()
 
 
-def initialize(mps_file, config, kernel_methods):
+def initialize(mps_file, conf, methods):
     curr_sol, base_kernel, values = init_kernel(
-        mps_file, config, kernel_methods.kernel_builder, kernel_methods.kernel_sort
+        mps_file, conf, methods.kernel_builder, methods.kernel_sort
     )
 
-    buckets = kernel_methods.bucket_builder(
+    buckets = methods.bucket_builder(
         base_kernel,
         values,
-        kernel_methods.bucket_sort,
-        config["BUCKET_SORTER_CONF"],
-        **config["BUCKET_CONF"],
+        methods.bucket_sort,
+        conf["BUCKET_SORTER_CONF"],
+        **conf["BUCKET_CONF"],
     )
     return curr_sol, base_kernel, buckets
 
