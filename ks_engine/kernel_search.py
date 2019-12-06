@@ -7,8 +7,7 @@ from collections import namedtuple
 
 
 KernelMethods = namedtuple(
-    "KernelMethods",
-    ["kernel_sort", "kernel_builder", "bucket_sort", "bucket_builder"],
+    "KernelMethods", ["kernel_sort", "kernel_builder", "bucket_sort", "bucket_builder"],
 )
 
 
@@ -20,7 +19,9 @@ def init_kernel(mps_file, config, kernel_builder, kernel_sort):
     values = lp_model.build_lp_solution()
     tmp_sol = lp_model.build_solution()
 
-    kernel = kernel_builder(base, values, kernel_sort, config["KERNEL_SORTER_CONF"], **config["KERNEL_CONF"])
+    kernel = kernel_builder(
+        base, values, kernel_sort, config["KERNEL_SORTER_CONF"], **config["KERNEL_CONF"]
+    )
 
     int_model = Model(mps_file, config, False)
     int_model.preload_solution(tmp_sol)
@@ -62,9 +63,14 @@ def initialize(mps_file, config, kernel_methods):
     )
 
     buckets = kernel_methods.bucket_builder(
-        base_kernel, values, kernel_methods.bucket_sort, config["BUCKET_SORTER_CONF"], **config["BUCKET_CONF"]
+        base_kernel,
+        values,
+        kernel_methods.bucket_sort,
+        config["BUCKET_SORTER_CONF"],
+        **config["BUCKET_CONF"],
     )
     return curr_sol, base_kernel, buckets
+
 
 def kernel_search(mps_file, config, kernel_methods):
     """
