@@ -10,3 +10,8 @@ class Solution:
 
     def get_value(self, name):
         return self.vars[name]
+
+    def update(self, value, var_iter):
+        self.value = value
+        for k, v in var_iter:
+            self.vars[k] = v

@@ -2,4 +2,4 @@ PRELOAD: on
 DEBUG: off
 BUCKET: 'decrease'
 BUCKET_CONF:
-  count: 14
+  count: 6

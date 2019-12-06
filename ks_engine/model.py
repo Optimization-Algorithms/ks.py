@@ -37,13 +37,12 @@ class Model:
     def __init__(self, mps_file, config, linear_relax=False):
 
         self.preload = config["PRELOAD"]
-
         self.model = gurobipy.read(mps_file, env=create_env(config))
         self.relax = linear_relax
         if linear_relax:
             self.model = self.model.relax()
 
-    def preload_solution(self, sol):
+    def preload_solution(self, sol=None):
         if not self.preload or sol is None:
             return
 
@@ -66,9 +65,14 @@ class Model:
         if solution:
             self.model.setParam("Cutoff", solution.value)
 
-    def build_solution(self):
+    def build_solution(self, prev_sol=None): 
         gen = ((var.varName, var.x) for var in self.model.getVars())
-        return Solution(self.model.objVal, gen)
+        if prev_sol:
+            prev_sol.update(self.model.objVal, gen)
+        else:
+            prev_sol = Solution(self.model.objVal, gen)
+       
+        return prev_sol
 
     def get_base_variables(self, null_value=0.0):
         gen = ((var.varName, var.x != null_value) for var in self.model.getVars())

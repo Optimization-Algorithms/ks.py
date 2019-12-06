@@ -54,7 +54,7 @@ def run_extension(mps_file, config, kernel, bucket, solution):
     if not model.run():
         return None
 
-    return model.build_solution()
+    return model.build_solution(solution)
 
 
 def initialize(mps_file, conf, methods):
