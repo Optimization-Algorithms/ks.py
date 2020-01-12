@@ -72,6 +72,16 @@ def initialize(mps_file, conf, methods):
     return curr_sol, base_kernel, buckets
 
 
+def solve_buckets(mps_file, config, curr_sol, base_kernel, buckets):
+    for buck in buckets:
+        select_vars(base_kernel, buck)
+        sol = run_extension(mps_file, config, base_kernel, buck, curr_sol)
+        if sol:
+            curr_sol = sol
+            update_kernel(base_kernel, buck, curr_sol, 0)
+    return curr_sol
+
+
 def kernel_search(mps_file, config, kernel_methods):
     """
     Run Kernel Search Heuristic
@@ -109,11 +119,13 @@ def kernel_search(mps_file, config, kernel_methods):
 
     """
     curr_sol, base_kernel, buckets = initialize(mps_file, config, kernel_methods)
-    for buck in buckets:
-        select_vars(base_kernel, buck)
-        sol = run_extension(mps_file, config, base_kernel, buck, curr_sol)
-        if sol:
-            curr_sol = sol
-            update_kernel(base_kernel, buck, curr_sol, 0)
+    iters = config['ITERATIONS']
+    
+    if iters > 1:
+        buckets = list(buckets)
+
+    for i in range(iters):
+        print("Iteration", i)
+        curr_sol = solve_buckets(mps_file, config, curr_sol, base_kernel, buckets)
 
     return curr_sol
