@@ -66,7 +66,7 @@ class BaseTest(unittest.TestCase):
     def test_export(self):
         store, expected = self.build_base_export()
         csv = store.get_csv()
-        
+
         self.assertEqual(csv, expected)
 
     def test_file_export(self):
@@ -85,6 +85,7 @@ class BaseTest(unittest.TestCase):
             with gzip.open(file, "r") as data:
                 read = data.read().decode()
                 self.assertEqual(read, expected)
+
 
 if __name__ == "__main__":
     unittest.main()

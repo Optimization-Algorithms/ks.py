@@ -65,13 +65,13 @@ class Model:
         if solution:
             self.model.setParam("Cutoff", solution.value)
 
-    def build_solution(self, prev_sol=None): 
+    def build_solution(self, prev_sol=None):
         gen = ((var.varName, var.x) for var in self.model.getVars())
         if prev_sol:
             prev_sol.update(self.model.objVal, gen)
         else:
             prev_sol = Solution(self.model.objVal, gen)
-       
+
         return prev_sol
 
     def get_base_variables(self, null_value=0.0):

@@ -3,10 +3,12 @@
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
 from collections import namedtuple
-import gzip 
+import gzip
 
-DebugData = namedtuple("DebugData", ["value", "time", "nodes", "kernel_size", "bucket_size"])
-DebugIndex = namedtuple("DebugIndex", [ "iteration", "bucket"])
+DebugData = namedtuple(
+    "DebugData", ["value", "time", "nodes", "kernel_size", "bucket_size"]
+)
+DebugIndex = namedtuple("DebugIndex", ["iteration", "bucket"])
 
 
 class DebugInfo:
@@ -20,7 +22,7 @@ class DebugInfo:
 
         if self.max_bucket < index.bucket:
             self.max_bucket = index.bucket
-        
+
         if self.max_iter < index.iteration:
             self.max_iter = index.iteration
 
@@ -33,12 +35,12 @@ class DebugInfo:
         else:
             with open(file_name, "w") as file:
                 file.write(csv)
- 
+
     def get_csv(self):
         out = "bucket, iteration, value, time, nodes, kernel_size, bucket_size"
         for k, v in self.store.items():
             tmp = f"{k.bucket}, {k.iteration}, {v.value}, {v.time}, {v.nodes}, {v.kernel_size}, {v.bucket_size}"
-            out += "\n" + tmp 
+            out += "\n" + tmp
         return out
 
     def bucket_iter(self, iteration):
@@ -54,8 +56,6 @@ class DebugInfo:
     def full_iter(self):
         for k, v in self.store.items():
             yield k, v
-
-
 
 
 class Solution:
@@ -74,6 +74,6 @@ class Solution:
         self.value = value
         for k, v in var_iter:
             self.vars[k] = v
-        
+
     def update_debug_info(self, index, debug_info):
         self.debug.add_data(debug_info, index)

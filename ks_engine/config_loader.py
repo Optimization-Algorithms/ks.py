@@ -19,7 +19,7 @@ DEFAULT_CONF = {
     "KERNEL_SORTER_CONF": {},
     "BUCKET_SORTER": "base_bucket_sort",
     "BUCKET_SORTER_CONF": {},
-    "ITERATIONS": 1
+    "ITERATIONS": 1,
 }
 
 

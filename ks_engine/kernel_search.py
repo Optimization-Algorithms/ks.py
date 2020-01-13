@@ -119,8 +119,8 @@ def kernel_search(mps_file, config, kernel_methods):
 
     """
     curr_sol, base_kernel, buckets = initialize(mps_file, config, kernel_methods)
-    iters = config['ITERATIONS']
-    
+    iters = config["ITERATIONS"]
+
     if iters > 1:
         buckets = list(buckets)
 
