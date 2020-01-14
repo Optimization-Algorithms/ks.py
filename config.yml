@@ -2,5 +2,6 @@ PRELOAD: on
 LOG: on
 BUCKET: 'decrease'
 BUCKET_CONF:
-  count: 20
-ITERATIONS: 2
+  count: 6
+ITERATIONS: 5
+DEBUG: off

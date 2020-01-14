@@ -59,13 +59,11 @@ class DebugInfo:
 
 
 class Solution:
-    def __init__(self, value, var_iter, debug=False):
+    def __init__(self, value, var_iter):
         self.vars = {k: v for k, v in var_iter}
         self.value = value
-        if debug:
-            self.debug = DebugInfo()
-        else:
-            self.debug = None
+        self.debug = DebugInfo()
+        
 
     def get_value(self, name):
         return self.vars[name]

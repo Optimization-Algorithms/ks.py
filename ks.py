@@ -35,7 +35,7 @@ def main():
         print(err)
     else:
         print(sol.value)
-        # print(sol.vars)
+        sol.debug.export_csv('run.csv', False)
 
 
 if __name__ == "__main__":

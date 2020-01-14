@@ -9,7 +9,7 @@ except ImportError:
     # for test purposes
     pass
 
-from .solution import Solution
+from .solution import Solution, DebugData
 from .config_loader import DEFAULT_CONF
 
 GUROBI_PARAMS = {
@@ -88,3 +88,12 @@ class Model:
                 yield var.varName, var.rc
             else:
                 yield var.varName, var.x
+
+    def build_debug(self):
+        return DebugData(
+            value=self.model.objVal,
+            time=self.model.getAttr("Runtime"),
+            nodes=self.model.getAttr("NodeCount"),
+            kernel_size=0,
+            bucket_size=0
+        )

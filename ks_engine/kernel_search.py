@@ -3,6 +3,7 @@
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
 from .model import Model
+from .solution import DebugIndex
 from collections import namedtuple
 
 
@@ -45,7 +46,7 @@ def update_kernel(base_kernel, bucket, solution, null):
             base_kernel[var] = False
 
 
-def run_extension(mps_file, config, kernel, bucket, solution):
+def run_extension(mps_file, config, kernel, bucket, solution, bucket_index, iteration_index):
     model = Model(mps_file, config)
     model.disable_variables(kernel)
     model.add_bucket_contraints(solution, bucket)
@@ -54,7 +55,13 @@ def run_extension(mps_file, config, kernel, bucket, solution):
     if not model.run():
         return None
 
-    return model.build_solution(solution)
+    solution = model.build_solution(solution)
+    if config["DEBUG"]:
+        debug_index = DebugIndex(iteration_index, bucket_index)
+        debug_data = model.build_debug()
+        solution.update_debug_info(debug_index, debug_data)
+
+    return solution
 
 
 def initialize(mps_file, conf, methods):
@@ -72,10 +79,10 @@ def initialize(mps_file, conf, methods):
     return curr_sol, base_kernel, buckets
 
 
-def solve_buckets(mps_file, config, curr_sol, base_kernel, buckets):
-    for buck in buckets:
+def solve_buckets(mps_file, config, curr_sol, base_kernel, buckets, iteration):
+    for index, buck in enumerate(buckets):
         select_vars(base_kernel, buck)
-        sol = run_extension(mps_file, config, base_kernel, buck, curr_sol)
+        sol = run_extension(mps_file, config, base_kernel, buck, curr_sol, index, iteration)
         if sol:
             curr_sol = sol
             update_kernel(base_kernel, buck, curr_sol, 0)
@@ -125,7 +132,6 @@ def kernel_search(mps_file, config, kernel_methods):
         buckets = list(buckets)
 
     for i in range(iters):
-        print("Iteration", i)
-        curr_sol = solve_buckets(mps_file, config, curr_sol, base_kernel, buckets)
+        curr_sol = solve_buckets(mps_file, config, curr_sol, base_kernel, buckets, i)
 
     return curr_sol
