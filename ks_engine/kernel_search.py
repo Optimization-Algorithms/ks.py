@@ -58,7 +58,7 @@ def run_extension(mps_file, config, kernel, bucket, solution, bucket_index, iter
     solution = model.build_solution(solution)
     if config["DEBUG"]:
         debug_index = DebugIndex(iteration_index, bucket_index)
-        debug_data = model.build_debug()
+        debug_data = model.build_debug(sum(kernel.values()), len(bucket))
         solution.update_debug_info(debug_index, debug_data)
 
     return solution

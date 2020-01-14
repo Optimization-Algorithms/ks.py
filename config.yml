@@ -4,4 +4,4 @@ BUCKET: 'decrease'
 BUCKET_CONF:
   count: 6
 ITERATIONS: 5
-DEBUG: off
+DEBUG: on

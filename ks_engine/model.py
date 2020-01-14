@@ -89,11 +89,11 @@ class Model:
             else:
                 yield var.varName, var.x
 
-    def build_debug(self):
+    def build_debug(self, kernel_size, bucket_size):
         return DebugData(
             value=self.model.objVal,
             time=self.model.getAttr("Runtime"),
             nodes=self.model.getAttr("NodeCount"),
-            kernel_size=0,
-            bucket_size=0
+            kernel_size=kernel_size,
+            bucket_size=bucket_size
         )
