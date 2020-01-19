@@ -46,7 +46,9 @@ def update_kernel(base_kernel, bucket, solution, null):
             base_kernel[var] = False
 
 
-def run_extension(mps_file, config, kernel, bucket, solution, bucket_index, iteration_index):
+def run_extension(
+    mps_file, config, kernel, bucket, solution, bucket_index, iteration_index
+):
     model = Model(mps_file, config)
     model.disable_variables(kernel)
     model.add_bucket_contraints(solution, bucket)
@@ -82,7 +84,9 @@ def initialize(mps_file, conf, methods):
 def solve_buckets(mps_file, config, curr_sol, base_kernel, buckets, iteration):
     for index, buck in enumerate(buckets):
         select_vars(base_kernel, buck)
-        sol = run_extension(mps_file, config, base_kernel, buck, curr_sol, index, iteration)
+        sol = run_extension(
+            mps_file, config, base_kernel, buck, curr_sol, index, iteration
+        )
         if sol:
             curr_sol = sol
             update_kernel(base_kernel, buck, curr_sol, 0)

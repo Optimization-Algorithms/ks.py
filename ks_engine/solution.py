@@ -63,7 +63,6 @@ class Solution:
         self.vars = {k: v for k, v in var_iter}
         self.value = value
         self.debug = DebugInfo()
-        
 
     def get_value(self, name):
         return self.vars[name]

@@ -95,5 +95,5 @@ class Model:
             time=self.model.getAttr("Runtime"),
             nodes=self.model.getAttr("NodeCount"),
             kernel_size=kernel_size,
-            bucket_size=bucket_size
+            bucket_size=bucket_size,
         )

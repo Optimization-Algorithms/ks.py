@@ -15,7 +15,7 @@ DEFAULT_CONF = {
     "BUCKET_CONF": {"size": 10},
     "PRELOAD": True,
     "LOG": False,
-    "DEBUG" : False,
+    "DEBUG": False,
     "KERNEL_SORTER": "base_kernel_sort",
     "KERNEL_SORTER_CONF": {},
     "BUCKET_SORTER": "base_bucket_sort",
