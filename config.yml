@@ -1,7 +1,7 @@
 PRELOAD: on
 LOG: on
-BUCKET: 'decrease'
+BUCKET: 'fixed'
 BUCKET_CONF:
-  count: 6
+  size: 6
 ITERATIONS: 5
 DEBUG: on

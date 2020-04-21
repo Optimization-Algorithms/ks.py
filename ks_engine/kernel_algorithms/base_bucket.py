@@ -5,9 +5,11 @@
 import math
 
 
-def fixed_size_bucket(base, values, sorter, sorter_conf, size):
+def fixed_size_bucket(base, values, sorter, sorter_conf, size=1, count=0):
     variables = sorter(base, values, **sorter_conf)
     length = len(variables)
+    if count:
+        size = length // count
     start = 0
     while start < length:
         end = start + size

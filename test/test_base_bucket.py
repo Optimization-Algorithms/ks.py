@@ -65,6 +65,31 @@ class TestBaseBucket(unittest.TestCase):
             self.assertEqual(len(bucket), length)
 
 
+    def test_bucket_correct_size_fixed_count(self):
+        config = {"count" : 13}
+        size = 2
+        count = 0
+        kernel, values = build_kernel_fixed_size()
+        buckets = fixed_size_bucket(kernel , values, bucket_sort, {}, **config)
+        for bucket in buckets:
+            count += 1
+            self.assertEqual(len(bucket), 2)
+
+        self.assertEqual(count, 13)
+
+    def test_bucket_wrong_size_fixed_count(self):
+        config = {"count" : 5}
+        sizes = [5, 5, 5, 5, 5, 1]
+        count = 0
+        kernel, values = build_kernel_fixed_size()
+        buckets = fixed_size_bucket(kernel , values, bucket_sort, {}, **config)
+        for bucket, size in zip(buckets, sizes):
+            count += 1
+            self.assertEqual(len(bucket), size)
+            
+        self.assertEqual(count, len(sizes))
+
+
 class TestVariableSizeBucket(unittest.TestCase):
     def test_buckets_correct_size(self):
         config = {"count": 2}
