@@ -3,5 +3,5 @@ LOG: on
 BUCKET: 'fixed'
 BUCKET_CONF:
   size: 6
-ITERATIONS: 5
+ITERATIONS: 1
 DEBUG: on

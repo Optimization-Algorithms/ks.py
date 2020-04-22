@@ -134,8 +134,15 @@ def kernel_search(mps_file, config, kernel_methods):
 
     if iters > 1:
         buckets = list(buckets)
-
+    prev = None
     for i in range(iters):
         curr_sol = solve_buckets(mps_file, config, curr_sol, base_kernel, buckets, i)
+        if curr_sol is None:
+            break
+        elif prev is None:
+            prev = curr_sol
+        elif prev.value < curr_sol.value:
+            curr_sol = prev
+            break
 
     return curr_sol
