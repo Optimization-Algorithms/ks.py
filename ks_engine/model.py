@@ -18,7 +18,6 @@ GUROBI_PARAMS = {
     "MIN_GAP": "MIPGap",
 }
 
-
 def create_env(config):
     env = gurobipy.Env()
     if not config["LOG"]:
@@ -51,7 +50,8 @@ class Model:
 
     def run(self):
         self.model.optimize()
-        return self.model.status == gurobipy.GRB.Status.OPTIMAL
+        stat = self.model.status
+        return stat == gurobipy.GRB.status.OPTIMAL
 
     def disable_variables(self, base_kernel, value=0):
         for name, _ in filter(lambda x: not x[1], base_kernel.items()):

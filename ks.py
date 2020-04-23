@@ -33,6 +33,9 @@ def main():
         sol = kernel_search(args.mps, conf, algo)
     except ValueError as err:
         print(err)
+    except RuntimeError as err:
+        print(err)
+        exit(1)
     else:
         print(sol.value)
         sol.debug.export_csv("run.csv", False)

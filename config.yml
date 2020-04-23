@@ -2,6 +2,7 @@ PRELOAD: on
 LOG: on
 BUCKET: 'fixed'
 BUCKET_CONF:
-  size: 6
+  size: 10
 ITERATIONS: 1
 DEBUG: on
+TIME_LIMIT: 10

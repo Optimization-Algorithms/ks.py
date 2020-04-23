@@ -5,17 +5,35 @@
 from .model import Model
 from .solution import DebugIndex
 from collections import namedtuple
-
+import time
 
 KernelMethods = namedtuple(
     "KernelMethods", ["kernel_sort", "kernel_builder", "bucket_sort", "bucket_builder"],
 )
 
+def run_solution(model, config):
+    begin = time.time_ns()
+    stat = model.run()
+    end = time.time_ns()
+    if config['TIME_LIMIT'] != -1:
+        delta = (end - begin) / 1e9 
+        delta = int(delta)
+        limit = config['TIME_LIMIT']
+        limit -= delta
+        print("time limit", limit)
+        if limit <= 0:
+            raise RuntimeError("Time out")
+        else:
+            config['TIME_LIMIT'] = limit
+    return stat
 
 def init_kernel(mps_file, config, kernel_builder, kernel_sort):
     lp_model = Model(mps_file, config, True)
-    if not lp_model.run():
+    stat = run_solution(lp_model, config)
+
+    if not stat:
         raise ValueError(f"Given Problem: {mps_file} has no LP solution")
+
     base = lp_model.get_base_variables()
     values = lp_model.build_lp_solution()
     tmp_sol = lp_model.build_solution()
@@ -27,11 +45,12 @@ def init_kernel(mps_file, config, kernel_builder, kernel_sort):
     int_model = Model(mps_file, config, False)
     int_model.preload_solution(tmp_sol)
     int_model.disable_variables(kernel)
-    if int_model.run():
+    stat = run_solution(int_model, config)
+    if stat:
         out = int_model.build_solution()
     else:
         out = None
-
+    
     return out, kernel, values
 
 
@@ -54,8 +73,10 @@ def run_extension(
     model.add_bucket_contraints(solution, bucket)
     model.preload_solution(solution)
 
-    if not model.run():
+    stat = run_solution(model, config)
+    if not stat:
         return None
+    
 
     solution = model.build_solution(solution)
     if config["DEBUG"]:
