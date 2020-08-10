@@ -97,3 +97,7 @@ class Model:
             kernel_size=kernel_size,
             bucket_size=bucket_size,
         )
+
+    def model_size(self):
+        tmp = self.model.getVars()
+        return len(tmp)
