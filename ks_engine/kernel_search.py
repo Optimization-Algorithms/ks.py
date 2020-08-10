@@ -151,7 +151,7 @@ def kernel_search(mps_file, config, kernel_methods):
         in the solution
 
     """
-    init_feature_kernel(mps_file, config, None, None)
+    
 
     curr_sol, base_kernel, buckets = initialize(mps_file, config, kernel_methods)
     iters = config["ITERATIONS"]
