@@ -1,11 +1,14 @@
 PRELOAD: on
-LOG: on
+LOG: off
 BUCKET: 'fixed'
 BUCKET_CONF:
   size: 10
 ITERATIONS: 1
 DEBUG: on
-TIME_LIMIT: 10
-REL_SIZE: 0.1
-COUNT: 15
-GROUPS: 1
+
+FEATURE_KERNEL:
+    COUNT: 10
+    MIN_TIME: 10
+    MAX_TIME: 15
+    CACHE_FILE: 'feature.dat'
+

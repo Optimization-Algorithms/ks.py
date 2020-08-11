@@ -5,6 +5,8 @@
 from collections import namedtuple
 import gzip
 
+import numpy as np
+
 DebugData = namedtuple(
     "DebugData", ["value", "time", "nodes", "kernel_size", "bucket_size"]
 )
@@ -74,3 +76,8 @@ class Solution:
 
     def update_debug_info(self, index, debug_info):
         self.debug.add_data(debug_info, index)
+
+    def variables(self):
+        vals = self.vars.values()
+        list_vals = list(vals)
+        return np.array(list_vals)

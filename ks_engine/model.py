@@ -18,7 +18,7 @@ GUROBI_PARAMS = {
     "MIN_GAP": "MIPGap",
 }
 
-def create_env(config):
+def create_env(config, one_solution):
     env = gurobipy.Env()
     if not config["LOG"]:
         env.setParam("OutputFlag", 0)
@@ -29,15 +29,20 @@ def create_env(config):
         if conf != def_val:
             env.setParam(v, conf)
 
+    if one_solution:
+        env.setParam("SolutionLimit", 1)
+
+
     return env
 
 
 class Model:
-    def __init__(self, mps_file, config, linear_relax=False):
+    def __init__(self, mps_file, config, linear_relax=False, one_solution=False):
 
         self.preload = config["PRELOAD"]
-        self.model = gurobipy.read(mps_file, env=create_env(config))
+        self.model = gurobipy.read(mps_file, env=create_env(config, one_solution))
         self.relax = linear_relax
+        self.stat = None
         if linear_relax:
             self.model = self.model.relax()
 
@@ -51,6 +56,7 @@ class Model:
     def run(self):
         self.model.optimize()
         stat = self.model.status
+        self.stat = stat
         return stat == gurobipy.GRB.status.OPTIMAL
 
     def disable_variables(self, base_kernel, value=0):
@@ -101,3 +107,10 @@ class Model:
     def model_size(self):
         tmp = self.model.getVars()
         return len(tmp)
+
+
+    def reach_solution_limit(self):
+        return self.stat == gurobipy.GRB.status.SOLUTION_LIMIT
+
+    def reach_time_limit(self):
+        return self.stat == gurobipy.GRB.status.TIME_LIMIT
