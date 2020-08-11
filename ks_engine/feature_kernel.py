@@ -52,7 +52,8 @@ def init_feature_kernel(mps_file, config, kernel_builder, kernel_sort):
         classifier.fit(instances, classes)
         features = classifier.feature_importances_
         var_couple = couple_variables(get_var_name(preload_model), features)
-        kernel = find_most_important(var_couple, 4)
+        kernel_size = get_kernel_size(solution_set, config["FEATURE_KERNEL"].get('POLICY'))
+        kernel = find_most_important(var_couple, kernel_size)
         print(kernel)
     else:
         raise ValueError(
@@ -203,3 +204,22 @@ def cache_solution(curr_sol, cache_file):
         pickle.dump(curr_sol, file)
 
     return curr_sol
+
+
+
+def get_kernel_size(solution, policy):
+    vals = solution.values()
+    infeasible = (v.model_size for v in vals if v.status == INFEASIBLE)
+    feasible = (v.model_size for v in vals if v.status == FEASIBLE)
+    if policy == 'max-infeasible':
+        output = max(infeasible)
+    elif policy == 'min-infeasible':
+        output = min(infeasible)
+    elif policy == 'max-feasible':
+        output = max(feasible)
+    else:
+        output = min(feasible)
+
+    return output
+
+

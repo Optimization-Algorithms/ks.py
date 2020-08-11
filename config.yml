@@ -11,4 +11,5 @@ FEATURE_KERNEL:
     MIN_TIME: 10
     MAX_TIME: 15
     CACHE_FILE: 'feature.dat'
+    POLICY: 'min-infeasible'
 
