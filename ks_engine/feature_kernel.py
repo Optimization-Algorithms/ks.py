@@ -38,7 +38,7 @@ def init_feature_kernel(mps_file, config, kernel_builder, kernel_sort):
         min_time = None
         max_time = None
 
-    var_names = get_var_table(preload_model)
+    var_names = get_variable_name_table(preload_model)
     solution_set = generate_model_solutions(
         mps_file, config, var_names, model_count, abs_size, min_time, max_time
     )
@@ -46,15 +46,13 @@ def init_feature_kernel(mps_file, config, kernel_builder, kernel_sort):
     if cache_file := config["FEATURE_KERNEL"]["CACHE_FILE"]:
         solution_set = cache_solution(solution_set, cache_file)
 
-    if len(solution_set):
-        instances, classes = convert_solutions(solution_set, preload_model.model_size())
-        classifier = RandomForestClassifier()
-        classifier.fit(instances, classes)
-        features = classifier.feature_importances_
-        var_couple = couple_variables(get_var_name(preload_model), features)
-        kernel_size = get_kernel_size(solution_set, config["FEATURE_KERNEL"].get('POLICY'))
-        kernel = find_most_important(var_couple, kernel_size)
-        print(kernel)
+    if solution_set:
+        kernel, bucket = build_kernel_bucket(
+            solution_set,
+            preload_model.model_size(),
+            get_variable_name_list(preload_model),
+            config["FEATURE_KERNEL"].get("POLICY"),
+        )
     else:
         raise ValueError(
             f"Unable to find valid subsets in {model_count} iteration, try to increase this number"
@@ -65,8 +63,18 @@ def init_feature_kernel(mps_file, config, kernel_builder, kernel_sort):
     else:
         config.pop("TIME_LIMIT", None)
 
-    # groups = build_groups(get_var_names(preload_model), group_count)
+    return kernel
 
+
+def build_kernel_bucket(solution_set, model_size, var_name, policy):
+    instances, classes = build_sklean_instance(solution_set, model_size)
+    classifier = RandomForestClassifier()
+    classifier.fit(instances, classes)
+    features = classifier.feature_importances_
+    var_couple = couple_variables(var_name, features)
+    kernel_size = get_kernel_size(solution_set, policy)
+    kernel, bucket = split_kernel_bucket(var_couple, kernel_size)
+    return kernel, bucket
 
 def generate_model_solutions(
     mps_file, config, var_names, count, size, min_time, max_time
@@ -80,8 +88,8 @@ def generate_model_solutions(
         if time_limit:
             config["TIME_LIMIT"] = time_limit
 
-        selected = select_random_vars(var_names, size)
-        result = solve_model(mps_file, config, selected)
+        selected = generate_random_sub_model(var_names, size)
+        result = solve_sub_model(mps_file, config, selected)
 
         if result:
             sol, stat = result
@@ -112,13 +120,16 @@ def couple_variables(var_names, feature_importance):
     return [(n, i) for n, i in zip(var_names, feature_importance)]
 
 
-def find_most_important(var_couple, count):
+def split_kernel_bucket(var_couple, count):
     var_couple.sort(key=lambda x: -x[1])
     head = var_couple[:count]
-    return [n for n, i in head]
+    tail = var_couple[count:]
+    kernel = [n for n, i in head]
+    bucket = [n for n, i in tail]
+    return kernel, bucket
 
 
-def convert_solutions(solutions, var_count):
+def build_sklean_instance(solutions, var_count):
     sol_count = len(solutions.values())
     instances = np.ndarray((sol_count, var_count))
     classes = np.ndarray(sol_count)
@@ -129,7 +140,7 @@ def convert_solutions(solutions, var_count):
     return instances, classes
 
 
-def solve_model(mps_file, config, selected_vars):
+def solve_sub_model(mps_file, config, selected_vars):
     lin_model = Model(mps_file, config, True)
     lin_model.disable_variables(selected_vars)
     stat = lin_model.run()
@@ -154,7 +165,7 @@ def solve_model(mps_file, config, selected_vars):
         return None
 
 
-def select_random_vars(var_names, count):
+def generate_random_sub_model(var_names, count):
     for k in var_names.keys():
         var_names[k] = False
 
@@ -167,25 +178,11 @@ def select_random_vars(var_names, count):
     return output
 
 
-def build_groups(var_names, groups):
-    var_count = len(var_names)
-    group_size = len(var_names) // groups
-    if var_count % groups:
-        group_size += 1
-    begin = 0
-    output = [None] * groups
-    for i in range(groups):
-        output[i] = var_names[begin : begin + group_size]
-        begin += group_size
-
-    return output
-
-
-def get_var_table(model):
+def get_variable_name_table(model):
     return {var.varName: False for var in model.model.getVars()}
 
 
-def get_var_name(model):
+def get_variable_name_list(model):
     return [var.varName for var in model.model.getVars()]
 
 
@@ -206,20 +203,17 @@ def cache_solution(curr_sol, cache_file):
     return curr_sol
 
 
-
 def get_kernel_size(solution, policy):
     vals = solution.values()
     infeasible = (v.model_size for v in vals if v.status == INFEASIBLE)
     feasible = (v.model_size for v in vals if v.status == FEASIBLE)
-    if policy == 'max-infeasible':
+    if policy == "max-infeasible":
         output = max(infeasible)
-    elif policy == 'min-infeasible':
+    elif policy == "min-infeasible":
         output = min(infeasible)
-    elif policy == 'max-feasible':
+    elif policy == "max-feasible":
         output = max(feasible)
     else:
         output = min(feasible)
 
     return output
-
-
