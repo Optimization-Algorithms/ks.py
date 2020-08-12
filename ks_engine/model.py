@@ -18,6 +18,7 @@ GUROBI_PARAMS = {
     "MIN_GAP": "MIPGap",
 }
 
+
 def create_env(config, one_solution):
     env = gurobipy.Env()
     if not config["LOG"]:
@@ -31,7 +32,6 @@ def create_env(config, one_solution):
 
     if one_solution:
         env.setParam("SolutionLimit", 1)
-
 
     return env
 
@@ -107,7 +107,6 @@ class Model:
     def model_size(self):
         tmp = self.model.getVars()
         return len(tmp)
-
 
     def reach_solution_limit(self):
         return self.stat == gurobipy.GRB.status.SOLUTION_LIMIT

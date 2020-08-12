@@ -3,13 +3,14 @@
 from collections import namedtuple
 import os
 import pickle
+import secrets
 
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 
-import secrets
 
 from .model import Model
+from .solution import Solution
 
 SubProblem = namedtuple("SubProblem", ["variables", "status", "model_size"])
 
@@ -20,7 +21,7 @@ TIME_OUT = 2
 DEF_REL_SIZE = 0.01
 
 
-def init_feature_kernel(mps_file, config, kernel_builder, kernel_sort):
+def init_feature_kernel(mps_file, config):
 
     preload_model = Model(mps_file, config, False)
     model_count = config["FEATURE_KERNEL"]["COUNT"]
@@ -47,10 +48,10 @@ def init_feature_kernel(mps_file, config, kernel_builder, kernel_sort):
         solution_set = cache_solution(solution_set, cache_file)
 
     if solution_set:
-        kernel, bucket = build_kernel_bucket(
+        kernel, values = build_kernel_and_values(
             solution_set,
             preload_model.model_size(),
-            get_variable_name_list(preload_model),
+            var_names,
             config["FEATURE_KERNEL"].get("POLICY"),
         )
     else:
@@ -63,18 +64,37 @@ def init_feature_kernel(mps_file, config, kernel_builder, kernel_sort):
     else:
         config.pop("TIME_LIMIT", None)
 
-    return kernel
+    return None, kernel, values
 
 
-def build_kernel_bucket(solution_set, model_size, var_name, policy):
+def build_kernel_and_values(solution_set, model_size, var_name_table: dict, policy):
+    features = compute_feature_importance(solution_set, model_size)
+
+    var_couple = list(zip(var_name_table.keys(), features))
+    kernel_size = get_kernel_size(solution_set, policy)
+
+    high_importance_vars = split_kernel_vars(var_couple, kernel_size)
+
+    kernel_vars = build_initial_kernel(var_name_table, high_importance_vars)
+    bucket_vars = zip(var_name_table.keys(), features)
+    values = Solution(None, bucket_vars)
+
+    return kernel_vars, values
+
+
+def compute_feature_importance(solution_set, model_size):
     instances, classes = build_sklean_instance(solution_set, model_size)
     classifier = RandomForestClassifier()
     classifier.fit(instances, classes)
-    features = classifier.feature_importances_
-    var_couple = couple_variables(var_name, features)
-    kernel_size = get_kernel_size(solution_set, policy)
-    kernel, bucket = split_kernel_bucket(var_couple, kernel_size)
-    return kernel, bucket
+    return classifier.feature_importances_
+
+
+def build_initial_kernel(var_name_table, kernel_var_names):
+    for var in kernel_var_names:
+        var_name_table[var] = True
+
+    return var_name_table
+
 
 def generate_model_solutions(
     mps_file, config, var_names, count, size, min_time, max_time
@@ -87,7 +107,7 @@ def generate_model_solutions(
         print("iter", k)
         if time_limit:
             config["TIME_LIMIT"] = time_limit
-
+        
         selected = generate_random_sub_model(var_names, size)
         result = solve_sub_model(mps_file, config, selected)
 
@@ -107,35 +127,29 @@ def generate_model_solutions(
                 else:
                     size = int(size * 1.1)
 
-            if size > len(var_names):
-                size = int(len(var_names) * DEF_REL_SIZE)
-
         else:
             size *= 2
+
+        if size > len(var_names):
+                size = int(len(var_names) * DEF_REL_SIZE)
 
     return solution_set
 
 
-def couple_variables(var_names, feature_importance):
-    return [(n, i) for n, i in zip(var_names, feature_importance)]
-
-
-def split_kernel_bucket(var_couple, count):
+def split_kernel_vars(var_couple, count):
     var_couple.sort(key=lambda x: -x[1])
     head = var_couple[:count]
-    tail = var_couple[count:]
     kernel = [n for n, i in head]
-    bucket = [n for n, i in tail]
-    return kernel, bucket
+    return kernel
 
 
 def build_sklean_instance(solutions, var_count):
     sol_count = len(solutions.values())
     instances = np.ndarray((sol_count, var_count))
     classes = np.ndarray(sol_count)
-    for i, v in enumerate(solutions.values()):
-        classes[i] = v.status
-        instances[i, :] = v.variables.variables()
+    for i, value in enumerate(solutions.values()):
+        classes[i] = value.status
+        instances[i, :] = value.variables.variables()
 
     return instances, classes
 
@@ -161,8 +175,7 @@ def solve_sub_model(mps_file, config, selected_vars):
 
         return base_sol, status
 
-    else:
-        return None
+    return None
 
 
 def generate_random_sub_model(var_names, count):
@@ -170,6 +183,7 @@ def generate_random_sub_model(var_names, count):
         var_names[k] = False
 
     rng = secrets.SystemRandom()
+    
     selected = rng.sample(var_names.keys(), count)
     for sel in selected:
         var_names[sel] = True
@@ -182,18 +196,14 @@ def get_variable_name_table(model):
     return {var.varName: False for var in model.model.getVars()}
 
 
-def get_variable_name_list(model):
-    return [var.varName for var in model.model.getVars()]
-
-
 def cache_solution(curr_sol, cache_file):
     if os.path.exists(cache_file):
         with open(cache_file, "rb") as file:
             prev_solution = pickle.load(file)
         if curr_sol:
             index = max(curr_sol.keys()) + 1
-            for i, v in enumerate(prev_solution.values()):
-                curr_sol[index + i] = v
+            for i, val in enumerate(prev_solution.values()):
+                curr_sol[index + i] = val
         else:
             curr_sol = prev_solution
 

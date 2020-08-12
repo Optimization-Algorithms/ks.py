@@ -12,21 +12,23 @@ KernelMethods = namedtuple(
     "KernelMethods", ["kernel_sort", "kernel_builder", "bucket_sort", "bucket_builder"],
 )
 
+
 def run_solution(model, config):
     begin = time.time_ns()
     stat = model.run()
     end = time.time_ns()
-    if config['TIME_LIMIT'] != -1:
-        delta = (end - begin) / 1e9 
+    if config["TIME_LIMIT"] != -1:
+        delta = (end - begin) / 1e9
         delta = int(delta)
-        limit = config['TIME_LIMIT']
+        limit = config["TIME_LIMIT"]
         limit -= delta
         print("time limit", limit)
         if limit <= 0:
             raise RuntimeError("Time out")
         else:
-            config['TIME_LIMIT'] = limit
+            config["TIME_LIMIT"] = limit
     return stat
+
 
 def init_kernel(mps_file, config, kernel_builder, kernel_sort):
     lp_model = Model(mps_file, config, True)
@@ -51,7 +53,7 @@ def init_kernel(mps_file, config, kernel_builder, kernel_sort):
         out = int_model.build_solution()
     else:
         out = None
-    
+
     return out, kernel, values
 
 
@@ -77,7 +79,6 @@ def run_extension(
     stat = run_solution(model, config)
     if not stat:
         return None
-    
 
     solution = model.build_solution(solution)
     if config["DEBUG"]:
@@ -89,9 +90,16 @@ def run_extension(
 
 
 def initialize(mps_file, conf, methods):
-    curr_sol, base_kernel, values = init_kernel(
-        mps_file, conf, methods.kernel_builder, methods.kernel_sort
-    )
+    if conf.get("FEATURE_KERNEL"):
+        curr_sol, base_kernel, values = init_feature_kernel(mps_file, conf)
+    else:
+        curr_sol, base_kernel, values = init_kernel(
+            mps_file, conf, methods.kernel_builder, methods.kernel_sort
+        )
+
+    print(type(curr_sol))
+    print(type(base_kernel))
+    print(type(values))
 
     buckets = methods.bucket_builder(
         base_kernel,
@@ -151,10 +159,9 @@ def kernel_search(mps_file, config, kernel_methods):
         in the solution
 
     """
-    
-    init_feature_kernel(mps_file, config, None, None)
-    exit()
 
+    # init_feature_kernel(mps_file, config, None, None)
+    # exit()
 
     curr_sol, base_kernel, buckets = initialize(mps_file, config, kernel_methods)
     iters = config["ITERATIONS"]

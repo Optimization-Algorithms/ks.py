@@ -12,7 +12,7 @@ import numpy as np
 def cheb_nodes(count: int):
     output = [0] * count
     for i, n in enumerate(range(1, count + 1)):
-        tmp = (((2 * n) - 1) / (2 * count)) * np.pi 
+        tmp = (((2 * n) - 1) / (2 * count)) * np.pi
         t = np.cos(tmp)
         if t < 0:
             t += 1
@@ -35,8 +35,8 @@ def bucket_sort(kernel: dict, values):
 def cheb_sort(kernel: dict, values):
     tmp = [k for k, v in kernel.items() if not v]
     tmp.sort(key=lambda x: -values.get_value(x))
-    head, tail = np.split(tmp, 2) 
-    nodes = cheb_nodes(len(tmp)) 
+    head, tail = np.split(tmp, 2)
+    nodes = cheb_nodes(len(tmp))
     head_nodes, tail_nodes = np.split(nodes, 2)
     output = []
     j, k = 0, 0
