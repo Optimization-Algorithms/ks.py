@@ -1,15 +1,15 @@
 PRELOAD: on
-LOG: off
+LOG: on
 BUCKET: 'fixed'
 BUCKET_CONF:
-  count: 150
+  count: 1500
 ITERATIONS: 1
 DEBUG: on
 
 FEATURE_KERNEL:
-    COUNT: 500
+    COUNT: 10
     MIN_TIME: 25
     MAX_TIME: 50
     CACHE_FILE: 'feature.dat'
-    POLICY: 'min-feasible'
+    POLICY: 'min-infeasible'
 

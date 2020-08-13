@@ -97,9 +97,6 @@ def initialize(mps_file, conf, methods):
             mps_file, conf, methods.kernel_builder, methods.kernel_sort
         )
 
-    print(type(curr_sol))
-    print(type(base_kernel))
-    print(type(values))
 
     buckets = methods.bucket_builder(
         base_kernel,

@@ -217,13 +217,17 @@ def get_kernel_size(solution, policy):
     vals = solution.values()
     infeasible = (v.model_size for v in vals if v.status == INFEASIBLE)
     feasible = (v.model_size for v in vals if v.status == FEASIBLE)
-    if policy == "max-infeasible":
-        output = max(infeasible)
-    elif policy == "min-infeasible":
-        output = min(infeasible)
-    elif policy == "max-feasible":
-        output = max(feasible)
-    else:
-        output = min(feasible)
+    try:
+        if policy == "max-infeasible":
+            output = max(infeasible)
+        elif policy == "min-infeasible":
+            output = min(infeasible)
+        elif policy == "max-feasible":
+            output = max(feasible)
+        else:
+            output = min(feasible)
+    except ValueError:
+        output = min((v.model_size for v in vals))
+
 
     return output
