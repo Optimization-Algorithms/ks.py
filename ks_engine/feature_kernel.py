@@ -8,7 +8,7 @@ import secrets
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 
-
+from .logger import feature_logger_factory
 from .model import Model
 from .solution import Solution
 
@@ -101,7 +101,7 @@ def generate_model_solutions(
 ):
 
     time_limit = min_time
-
+    logger = feature_logger_factory(config["FEATURE_KERNEL"].get("LOG_FILE"))
     solution_set = {}
     for k in range(count):
         print("iter", k)
@@ -110,7 +110,7 @@ def generate_model_solutions(
         
         selected = generate_random_sub_model(var_names, size)
         result = solve_sub_model(mps_file, config, selected)
-
+        logger.log_data(k, size, result)
         if result:
             sol, stat = result
 
@@ -133,6 +133,7 @@ def generate_model_solutions(
         if size > len(var_names):
                 size = int(len(var_names) * DEF_REL_SIZE)
 
+    logger.save()
     return solution_set
 
 

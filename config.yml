@@ -7,9 +7,9 @@ ITERATIONS: 1
 DEBUG: on
 
 FEATURE_KERNEL:
-    COUNT: 10
+    COUNT: 25
     MIN_TIME: 25
     MAX_TIME: 50
     CACHE_FILE: 'feature.dat'
     POLICY: 'min-infeasible'
-
+    LOG_FILE: 'log.csv'
