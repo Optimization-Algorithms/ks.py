@@ -100,6 +100,9 @@ def initialize(mps_file, conf, methods):
             mps_file, conf, methods.kernel_builder, methods.kernel_sort
         )
 
+    if ill_kernel(base_kernel):
+        raise ValueError("Kernel is large as the whole model")
+
 
     buckets = methods.bucket_builder(
         base_kernel,
@@ -109,6 +112,11 @@ def initialize(mps_file, conf, methods):
         **conf["BUCKET_CONF"],
     )
     return curr_sol, base_kernel, buckets
+
+def ill_kernel(base_kernel):
+    kernel_size = sum(1 for v in base_kernel.values() if v)
+    model_size = len(base_kernel)
+    return kernel_size == model_size
 
 
 def solve_buckets(mps_file, config, curr_sol, base_kernel, buckets, iteration):
