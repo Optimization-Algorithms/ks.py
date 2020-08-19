@@ -46,6 +46,9 @@ def init_kernel(mps_file, config, kernel_builder, kernel_sort):
     )
 
     int_model = Model(mps_file, config, False)
+    if config.get("PRELOAD_FILE"):
+        int_model.preload_from_file()
+        
     int_model.preload_solution(tmp_sol)
     int_model.disable_variables(kernel)
     stat = run_solution(int_model, config)

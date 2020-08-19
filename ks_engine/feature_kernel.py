@@ -178,6 +178,16 @@ def solve_sub_model(mps_file, config, selected_vars):
 
     return None
 
+def load_model(mps_file, config, relax): 
+    if relax:
+        output = Model(mps_file, config, True, False)
+    else:
+        output = Model(mps_file, config, False, True)
+
+    if config["FEATURE_KERNEL"].get("PRELOAD_FILE"):
+        output.preload_from_file()
+
+    return output
 
 def generate_random_sub_model(var_names, count):
     for k in var_names.keys():

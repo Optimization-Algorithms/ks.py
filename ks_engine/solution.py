@@ -83,9 +83,19 @@ class Solution:
         return np.array(list_vals)
 
     def save_as_sol_file(self, file_name):
-        if not file_name.endswith('.sol'):
-            file_name = f"{file_name}.sol"
+        file_name = get_solution_file_name(file_name)
 
         with open(file_name, "w") as file:
             for k, v in self.vars.items():
                 print(k, v, file=file)
+
+
+def get_solution_file_name(file_name):
+    if file_name is None: 
+        return None
+    
+    if file_name.endswith('.sol'):
+        return file_name
+    else:
+        return f"{file_name}.sol"
+

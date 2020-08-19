@@ -2,6 +2,8 @@
 
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
+import os
+
 
 try:
     import gurobipy
@@ -9,7 +11,7 @@ except ImportError:
     # for test purposes
     pass
 
-from .solution import Solution, DebugData
+from .solution import Solution, DebugData, get_solution_file_name
 from .config_loader import DEFAULT_CONF
 
 GUROBI_PARAMS = {
@@ -40,11 +42,18 @@ class Model:
     def __init__(self, mps_file, config, linear_relax=False, one_solution=False):
 
         self.preload = config["PRELOAD"]
+        self.sol_file = get_solution_file_name(config.get("SOLUTION_FILE"))
         self.model = gurobipy.read(mps_file, env=create_env(config, one_solution))
         self.relax = linear_relax
         self.stat = None
         if linear_relax:
             self.model = self.model.relax()
+
+
+    def preload_from_file(self):
+        if self.sol_file and os.path.isfile(self.sol_file):
+            self.model.read(self.sol_file)
+
 
     def preload_solution(self, sol=None):
         if not self.preload or sol is None:
