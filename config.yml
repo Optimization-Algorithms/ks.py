@@ -2,9 +2,17 @@ PRELOAD: on
 LOG: on
 BUCKET: 'fixed'
 BUCKET_CONF:
-  count: 25
+  count: 5
 ITERATIONS: 1
 DEBUG: 'neos-run.csv'
 SOLUTION_FILE: 'neos-sol.sol'
 
 
+FEATURE_KERNEL:
+    COUNT: 50
+    MIN_TIME: 25
+    MAX_TIME: 50
+    CACHE_FILE: 'neos-cache.dat'
+    POLICY: 'min-infeasible'
+    LOG_FILE: 'neos-log.csv'
+    PRELOAD_FILE: on
