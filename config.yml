@@ -1,18 +1,17 @@
 PRELOAD: on
-LOG: on
+LOG: off
 BUCKET: 'fixed'
 BUCKET_CONF:
-  count: 5
-ITERATIONS: 1
-DEBUG: 'neos-run.csv'
-SOLUTION_FILE: 'neos-sol.sol'
+  count: 15
+ITERATIONS: 2
+DEBUG: 'atlanta_ip-run.csv'
+SOLUTION_FILE: 'atlanta_ip-sol.sol'
 
 
 FEATURE_KERNEL:
     COUNT: 50
-    MIN_TIME: 25
-    MAX_TIME: 50
-    CACHE_FILE: 'neos-cache.dat'
+    MIN_TIME: 45
+    MAX_TIME: 60
     POLICY: 'min-infeasible'
-    LOG_FILE: 'neos-log.csv'
-    PRELOAD_FILE: on
+    LOG_FILE: 'atlanta_ip-log.csv'
+    
