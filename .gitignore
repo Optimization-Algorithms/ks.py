@@ -8,3 +8,4 @@ ks_engine/__pycache__/
 instances/*
 *.csv
 *.dat
+*.sol

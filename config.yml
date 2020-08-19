@@ -5,6 +5,7 @@ BUCKET_CONF:
   count: 15
 ITERATIONS: 3
 DEBUG: 'neos-run.csv'
+SOLUTION_FILE: 'neos-sol.sol'
 
 FEATURE_KERNEL:
     COUNT: 0

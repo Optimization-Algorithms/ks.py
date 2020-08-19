@@ -81,3 +81,11 @@ class Solution:
         vals = self.vars.values()
         list_vals = list(vals)
         return np.array(list_vals)
+
+    def save_as_sol_file(self, file_name):
+        if not file_name.endswith('.sol'):
+            file_name = f"{file_name}.sol"
+
+        with open(file_name, "w") as file:
+            for k, v in self.vars.items():
+                print(k, v, file=file)
