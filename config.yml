@@ -2,14 +2,14 @@ PRELOAD: on
 LOG: on
 BUCKET: 'fixed'
 BUCKET_CONF:
-  count: 1500
-ITERATIONS: 1
-DEBUG: on
+  count: 15
+ITERATIONS: 3
+DEBUG: 'neos-run.csv'
 
 FEATURE_KERNEL:
-    COUNT: 25
+    COUNT: 0
     MIN_TIME: 25
     MAX_TIME: 50
-    CACHE_FILE: 'feature.dat'
+    CACHE_FILE: 'neos-cache.dat'
     POLICY: 'min-infeasible'
-    LOG_FILE: 'log.csv'
+    LOG_FILE: 'neos-log.csv'

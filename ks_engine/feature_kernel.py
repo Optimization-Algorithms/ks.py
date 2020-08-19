@@ -44,7 +44,7 @@ def init_feature_kernel(mps_file, config):
         mps_file, config, var_names, model_count, abs_size, min_time, max_time
     )
 
-    if cache_file := config["FEATURE_KERNEL"]["CACHE_FILE"]:
+    if cache_file := config["FEATURE_KERNEL"].get("CACHE_FILE"):
         solution_set = cache_solution(solution_set, cache_file)
 
     if solution_set:

@@ -38,7 +38,7 @@ def main():
         exit(1)
     else:
         print(sol.value)
-        sol.debug.export_csv("run.csv", False)
+        sol.debug.export_csv(conf["DEBUG"], False)
 
 
 if __name__ == "__main__":
