@@ -39,9 +39,9 @@ class DebugInfo:
                 file.write(csv)
 
     def get_csv(self):
-        out = "bucket, iteration, value, time, nodes, kernel_size, bucket_size"
+        out = "bucket,iteration,value,time,nodes,kernel_size,bucket_size"
         for k, v in self.store.items():
-            tmp = f"{k.bucket}, {k.iteration}, {v.value}, {v.time}, {v.nodes}, {v.kernel_size}, {v.bucket_size}"
+            tmp = f"{k.bucket},{k.iteration},{v.value},{v.time},{v.nodes},{v.kernel_size},{v.bucket_size}"
             out += "\n" + tmp
         return out
 
