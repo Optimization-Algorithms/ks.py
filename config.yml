@@ -1,17 +1,17 @@
 PRELOAD: on
-LOG: off
+LOG: on
 BUCKET: 'fixed'
 BUCKET_CONF:
   count: 15
 ITERATIONS: 2
-DEBUG: 'atlanta_ip-run.csv'
-SOLUTION_FILE: 'atlanta_ip-sol.sol'
+DEBUG: 'bab2-run.csv'
+SOLUTION_FILE: 'bab2-sol.sol'
 
 
 FEATURE_KERNEL:
     COUNT: 50
     MIN_TIME: 45
-    MAX_TIME: 60
+    MAX_TIME: 90
     POLICY: 'min-infeasible'
-    LOG_FILE: 'atlanta_ip-log.csv'
+    LOG_FILE: 'bab2-log.csv'
     

@@ -9,3 +9,4 @@ instances/*
 *.csv
 *.dat
 *.sol
+*.sh

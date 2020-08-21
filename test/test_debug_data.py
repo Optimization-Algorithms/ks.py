@@ -59,7 +59,7 @@ class BaseTest(unittest.TestCase):
         index = DebugIndex(0, 1)
         store.add_data(data, index)
 
-        expected = "bucket, iteration, value, time, nodes, kernel_size, bucket_size\n0, 0, 1, 1, 1, 1, 1\n1, 0, 1, 1, 1, 1, 1"
+        expected = "bucket,iteration,value,time,nodes,kernel_size,bucket_size\n0,0,1,1,1,1,1\n1,0,1,1,1,1,1"
 
         return store, expected
 
