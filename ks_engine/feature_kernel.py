@@ -122,16 +122,15 @@ def generate_model_solutions(
             if stat == INFEASIBLE:
                 size = int(size * 1.1)
             elif time_limit:
+                size = int(size * 0.9)
                 if time_limit < max_time:
                     time_limit += 1
-                else:
-                    size = int(size * 1.1)
 
         else:
             if time_limit < max_time:
                 time_limit += 1
             size = size_grow_function(size, len(var_names))
-
+        
         if size > len(var_names):
                 size = len(var_names)
 
@@ -250,6 +249,7 @@ def get_kernel_size(solution, policy):
     except ValueError:
         output = min((v.model_size for v in vals if v.status == INFEASIBLE or v.status == FEASIBLE))
 
+    print(output)
 
     return output
 

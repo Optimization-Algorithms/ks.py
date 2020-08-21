@@ -2,16 +2,17 @@ PRELOAD: on
 LOG: on
 BUCKET: 'fixed'
 BUCKET_CONF:
-  count: 15
-ITERATIONS: 2
+  count: 150
+ITERATIONS: 1
 DEBUG: 'bab2-run.csv'
 SOLUTION_FILE: 'bab2-sol.sol'
 
 
 FEATURE_KERNEL:
-    COUNT: 50
+    COUNT: 0
     MIN_TIME: 45
-    MAX_TIME: 90
-    POLICY: 'min-infeasible'
+    MAX_TIME: 60
+    POLICY: 'max-feasible'
     LOG_FILE: 'bab2-log.csv'
+    CACHE_FILE: 'bab2-cache.dat'
     
