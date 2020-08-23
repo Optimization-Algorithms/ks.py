@@ -2,17 +2,18 @@ PRELOAD: on
 LOG: on
 BUCKET: 'fixed'
 BUCKET_CONF:
-  count: 150
-ITERATIONS: 1
-DEBUG: 'bab2-run.csv'
-SOLUTION_FILE: 'bab2-sol.sol'
+  count: 15
+ITERATIONS: 2
+DEBUG: 'bab6-run.csv'
+SOLUTION_FILE: 'bab6-sol.sol'
+MIP_GAP: 4.0
 
 
 FEATURE_KERNEL:
-    COUNT: 0
-    MIN_TIME: 45
-    MAX_TIME: 60
-    POLICY: 'max-feasible'
-    LOG_FILE: 'bab2-log.csv'
-    CACHE_FILE: 'bab2-cache.dat'
+    COUNT: 50
+    MIN_TIME: 10
+    MAX_TIME: 40
+    POLICY: 'min-feasible'
+    LOG_FILE: 'bab6-init.csv'
+    CACHE_FILE: 'bab6-cache.dat'
     

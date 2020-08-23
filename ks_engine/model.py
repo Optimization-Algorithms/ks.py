@@ -17,7 +17,7 @@ from .config_loader import DEFAULT_CONF
 GUROBI_PARAMS = {
     "TIME_LIMIT": "TimeLimit",
     "NUM_THREAD": "Threads",
-    "MIN_GAP": "MIPGap",
+    "MIP_GAP": "MIPGap",
 }
 
 
@@ -29,7 +29,7 @@ def create_env(config, one_solution):
     for k, v in GUROBI_PARAMS.items():
         def_val = DEFAULT_CONF[k]
         conf = config[k]
-        if conf != def_val:
+        if conf != def_val: 
             env.setParam(v, conf)
 
     if one_solution:

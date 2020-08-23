@@ -8,7 +8,7 @@ from yaml import safe_load
 DEFAULT_CONF = {
     "TIME_LIMIT": -1,
     "NUM_THREAD": -1,
-    "MIN_GAP": 0.0,
+    "MIP_GAP": 0.0,
     "KERNEL": "base",
     "KERNEL_CONF": {},
     "BUCKET": "fixed",
