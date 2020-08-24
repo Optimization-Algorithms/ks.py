@@ -35,18 +35,34 @@ def bucket_sort(kernel: dict, values):
 def cheb_sort(kernel: dict, values):
     tmp = [k for k, v in kernel.items() if not v]
     tmp.sort(key=lambda x: -values.get_value(x))
-    head, tail = np.split(tmp, 2)
-    nodes = cheb_nodes(len(tmp))
-    head_nodes, tail_nodes = np.split(nodes, 2)
+    tmp = np.array(tmp)
+    head, tail = np.array_split(tmp, 2) 
+    nodes = cheb_nodes(len(tmp)) 
+    head_nodes, tail_nodes = np.array_split(nodes, 2)
     output = []
     j, k = 0, 0
+    
     for _ in range(len(tmp)):
-        if head_nodes[j] < tail_nodes[k]:
-            output.append(head[k])
-            k += 1
+        done_tail = k >= len(tail_nodes)
+        done_head = j >= len(head_nodes)
+        if done_tail:
+            flag = True 
+        elif done_head:
+            flag = False  
         else:
-            output.append(tail[j])
+            if head_nodes[j] < tail_nodes[k]:
+                flag = False
+            else:
+                flag = True
+            
+        if flag:
+            output.append(head[j])
             j += 1
+        else:
+            output.append(tail[k])
+            k += 1
+        
+        
     return output
 
 

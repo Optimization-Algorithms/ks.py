@@ -11,9 +11,8 @@ from ks_engine.kernel_algorithms.base_bucket import (
     fixed_size_bucket,
     decresing_size_bucket,
 )
-from ks_engine.kernel_algorithms.base_sort import bucket_sort
+from ks_engine.kernel_algorithms.base_sort import bucket_sort, cheb_sort
 from ks_engine.solution import Solution
-
 
 def build_kernel_fixed_size():
     kernel = {k: i % 2 == 0 for i, k in enumerate(ascii_letters)}
@@ -21,6 +20,12 @@ def build_kernel_fixed_size():
     return kernel, values
 
 
+class TestChebSort(unittest.TestCase):
+    def test_cheb_sort(self):
+        kernel, values = build_kernel_fixed_size()
+        vals = cheb_sort(kernel, values)
+        
+        
 class TestBucketSorting(unittest.TestCase):
     def test_sorter(self):
         kernel, values = build_kernel_fixed_size()
