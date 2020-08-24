@@ -12,7 +12,7 @@ import numpy as np
 def cheb_nodes(count: int):
     output = [0] * count
     for i, n in enumerate(range(1, count + 1)):
-        tmp = (((2 * n) - 1) / (2 * count)) * np.pi 
+        tmp = (((2 * n) - 1) / (2 * count)) * np.pi
         t = np.cos(tmp)
         if t < 0:
             t += 1

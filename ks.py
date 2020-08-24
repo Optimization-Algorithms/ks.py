@@ -37,8 +37,11 @@ def main():
         print(err)
         exit(1)
     else:
+        if sol_file := conf["SOLUTION_FILE"]:
+            sol.save_as_sol_file(sol_file)
+            
         print(sol.value)
-        sol.debug.export_csv("run.csv", False)
+        sol.debug.export_csv(conf["DEBUG"], False)
 
 
 if __name__ == "__main__":

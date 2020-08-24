@@ -2,6 +2,8 @@
 
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
+import os
+
 
 try:
     import gurobipy
@@ -9,16 +11,17 @@ except ImportError:
     # for test purposes
     pass
 
-from .solution import Solution, DebugData
+from .solution import Solution, DebugData, get_solution_file_name
 from .config_loader import DEFAULT_CONF
 
 GUROBI_PARAMS = {
     "TIME_LIMIT": "TimeLimit",
     "NUM_THREAD": "Threads",
-    "MIN_GAP": "MIPGap",
+    "MIP_GAP": "MIPGap",
 }
 
-def create_env(config):
+
+def create_env(config, one_solution):
     env = gurobipy.Env()
     if not config["LOG"]:
         env.setParam("OutputFlag", 0)
@@ -26,20 +29,31 @@ def create_env(config):
     for k, v in GUROBI_PARAMS.items():
         def_val = DEFAULT_CONF[k]
         conf = config[k]
-        if conf != def_val:
+        if conf != def_val: 
             env.setParam(v, conf)
+
+    if one_solution:
+        env.setParam("SolutionLimit", 1)
 
     return env
 
 
 class Model:
-    def __init__(self, mps_file, config, linear_relax=False):
+    def __init__(self, mps_file, config, linear_relax=False, one_solution=False):
 
         self.preload = config["PRELOAD"]
-        self.model = gurobipy.read(mps_file, env=create_env(config))
+        self.sol_file = get_solution_file_name(config.get("SOLUTION_FILE"))
+        self.model = gurobipy.read(mps_file, env=create_env(config, one_solution))
         self.relax = linear_relax
+        self.stat = None
         if linear_relax:
             self.model = self.model.relax()
+
+
+    def preload_from_file(self):
+        if self.sol_file and os.path.isfile(self.sol_file):
+            self.model.read(self.sol_file)
+
 
     def preload_solution(self, sol=None):
         if not self.preload or sol is None:
@@ -51,6 +65,7 @@ class Model:
     def run(self):
         self.model.optimize()
         stat = self.model.status
+        self.stat = stat
         return stat == gurobipy.GRB.status.OPTIMAL
 
     def disable_variables(self, base_kernel, value=0):
@@ -97,3 +112,13 @@ class Model:
             kernel_size=kernel_size,
             bucket_size=bucket_size,
         )
+
+    def model_size(self):
+        tmp = self.model.getVars()
+        return len(tmp)
+
+    def reach_solution_limit(self):
+        return self.stat == gurobipy.GRB.status.SOLUTION_LIMIT
+
+    def reach_time_limit(self):
+        return self.stat == gurobipy.GRB.status.TIME_LIMIT

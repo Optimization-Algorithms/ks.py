@@ -3,7 +3,17 @@ LOG: off
 BUCKET: 'fixed'
 BUCKET_CONF:
   count: 15
-ITERATIONS: 3
-DEBUG: on
-TIME_LIMIT: 100
-BUCKET_SORTER: 'cheb_bucket_sort'
+ITERATIONS: 2
+DEBUG: 'bab6-run.csv'
+SOLUTION_FILE: 'bab6-sol.sol'
+MIP_GAP: 4.0
+
+
+FEATURE_KERNEL:
+    COUNT: 50
+    MIN_TIME: 10
+    MAX_TIME: 40
+    POLICY: 'min-feasible'
+    LOG_FILE: 'bab6-init.csv'
+    CACHE_FILE: 'bab6-cache.dat'
+    

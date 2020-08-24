@@ -5,6 +5,8 @@
 from collections import namedtuple
 import gzip
 
+import numpy as np
+
 DebugData = namedtuple(
     "DebugData", ["value", "time", "nodes", "kernel_size", "bucket_size"]
 )
@@ -37,9 +39,9 @@ class DebugInfo:
                 file.write(csv)
 
     def get_csv(self):
-        out = "bucket, iteration, value, time, nodes, kernel_size, bucket_size"
+        out = "bucket,iteration,value,time,nodes,kernel_size,bucket_size"
         for k, v in self.store.items():
-            tmp = f"{k.bucket}, {k.iteration}, {v.value}, {v.time}, {v.nodes}, {v.kernel_size}, {v.bucket_size}"
+            tmp = f"{k.bucket},{k.iteration},{v.value},{v.time},{v.nodes},{v.kernel_size},{v.bucket_size}"
             out += "\n" + tmp
         return out
 
@@ -74,3 +76,26 @@ class Solution:
 
     def update_debug_info(self, index, debug_info):
         self.debug.add_data(debug_info, index)
+
+    def variables(self):
+        vals = self.vars.values()
+        list_vals = list(vals)
+        return np.array(list_vals)
+
+    def save_as_sol_file(self, file_name):
+        file_name = get_solution_file_name(file_name)
+
+        with open(file_name, "w") as file:
+            for k, v in self.vars.items():
+                print(k, v, file=file)
+
+
+def get_solution_file_name(file_name):
+    if file_name is None: 
+        return None
+    
+    if file_name.endswith('.sol'):
+        return file_name
+    else:
+        return f"{file_name}.sol"
+

@@ -4,6 +4,7 @@
 
 from .model import Model
 from .solution import DebugIndex
+from .feature_kernel import init_feature_kernel
 from collections import namedtuple
 import time
 
@@ -11,21 +12,23 @@ KernelMethods = namedtuple(
     "KernelMethods", ["kernel_sort", "kernel_builder", "bucket_sort", "bucket_builder"],
 )
 
+
 def run_solution(model, config):
     begin = time.time_ns()
     stat = model.run()
     end = time.time_ns()
-    if config['TIME_LIMIT'] != -1:
-        delta = (end - begin) / 1e9 
+    if config["TIME_LIMIT"] != -1:
+        delta = (end - begin) / 1e9
         delta = int(delta)
-        limit = config['TIME_LIMIT']
+        limit = config["TIME_LIMIT"]
         limit -= delta
         print("time limit", limit)
         if limit <= 0:
             raise RuntimeError("Time out")
         else:
-            config['TIME_LIMIT'] = limit
+            config["TIME_LIMIT"] = limit
     return stat
+
 
 def init_kernel(mps_file, config, kernel_builder, kernel_sort):
     lp_model = Model(mps_file, config, True)
@@ -43,6 +46,9 @@ def init_kernel(mps_file, config, kernel_builder, kernel_sort):
     )
 
     int_model = Model(mps_file, config, False)
+    if config.get("PRELOAD_FILE"):
+        int_model.preload_from_file()
+        
     int_model.preload_solution(tmp_sol)
     int_model.disable_variables(kernel)
     stat = run_solution(int_model, config)
@@ -50,7 +56,7 @@ def init_kernel(mps_file, config, kernel_builder, kernel_sort):
         out = int_model.build_solution()
     else:
         out = None
-    
+
     return out, kernel, values
 
 
@@ -76,7 +82,6 @@ def run_extension(
     stat = run_solution(model, config)
     if not stat:
         return None
-    
 
     solution = model.build_solution(solution)
     if config["DEBUG"]:
@@ -88,9 +93,16 @@ def run_extension(
 
 
 def initialize(mps_file, conf, methods):
-    curr_sol, base_kernel, values = init_kernel(
-        mps_file, conf, methods.kernel_builder, methods.kernel_sort
-    )
+    if conf.get("FEATURE_KERNEL"):
+        curr_sol, base_kernel, values = init_feature_kernel(mps_file, conf)
+    else:
+        curr_sol, base_kernel, values = init_kernel(
+            mps_file, conf, methods.kernel_builder, methods.kernel_sort
+        )
+
+    if ill_kernel(base_kernel):
+        raise ValueError("Kernel is large as the whole model")
+
 
     buckets = methods.bucket_builder(
         base_kernel,
@@ -101,8 +113,14 @@ def initialize(mps_file, conf, methods):
     )
     return curr_sol, base_kernel, buckets
 
+def ill_kernel(base_kernel):
+    kernel_size = sum(1 for v in base_kernel.values() if v)
+    model_size = len(base_kernel)
+    return kernel_size == model_size
+
 
 def solve_buckets(mps_file, config, curr_sol, base_kernel, buckets, iteration):
+    
     for index, buck in enumerate(buckets):
         print(index)
         select_vars(base_kernel, buck)
@@ -151,6 +169,10 @@ def kernel_search(mps_file, config, kernel_methods):
         in the solution
 
     """
+
+    # init_feature_kernel(mps_file, config, None, None)
+    # exit()
+
     curr_sol, base_kernel, buckets = initialize(mps_file, config, kernel_methods)
     iters = config["ITERATIONS"]
 
