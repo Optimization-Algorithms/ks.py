@@ -38,7 +38,7 @@ def cheb_sort(kernel: dict, values):
     tmp = np.array(tmp)
     head, tail = np.array_split(tmp, 2) 
     nodes = cheb_nodes(len(tmp)) 
-    head_nodes, tail_nodes = np.split(nodes, 2)
+    head_nodes, tail_nodes = np.array_split(nodes, 2)
     output = []
     j, k = 0, 0
     
