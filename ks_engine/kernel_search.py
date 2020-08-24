@@ -104,6 +104,7 @@ def initialize(mps_file, conf, methods):
 
 def solve_buckets(mps_file, config, curr_sol, base_kernel, buckets, iteration):
     for index, buck in enumerate(buckets):
+        print(index)
         select_vars(base_kernel, buck)
         sol = run_extension(
             mps_file, config, base_kernel, buck, curr_sol, index, iteration
