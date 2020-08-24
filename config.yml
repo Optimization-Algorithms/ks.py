@@ -1,8 +1,9 @@
 PRELOAD: on
-LOG: on
+LOG: off
 BUCKET: 'fixed'
 BUCKET_CONF:
-  size: 10
-ITERATIONS: 1
+  count: 15
+ITERATIONS: 3
 DEBUG: on
-TIME_LIMIT: 10
+TIME_LIMIT: 100
+BUCKET_SORTER: 'cheb_bucket_sort'
