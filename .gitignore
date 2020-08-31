@@ -1,6 +1,5 @@
 # .gitignore automatically created on 2019-11-21 16:01
 # adding untracked files on 2019-11-21 16:01
-.gitignore
 .vscode/
 __pycache__/
 gurobi.log
