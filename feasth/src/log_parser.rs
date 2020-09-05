@@ -51,10 +51,15 @@ pub fn get_average_sizes(file: &Path) -> Result<TotalSize, ParseError> {
     parse_status_data(&data)
 }
 
+pub fn get_model_sizes(file: &Path) -> Result<Vec<(usize, Option<usize>)>, ParseError> {
+    let data = load_file(file)?;
+    data.lines().filter_map(parse_csv_line).collect()
+}
+
 fn parse_status_data(data: &str) -> Result<TotalSize, ParseError> {
     let output = data
         .lines()
-        .filter_map(parse_csv_line)
+        .filter_map(extract_size_and_status)
         .map(|parse| match parse {
             Ok((c, s)) => match s {
                 0 => Ok((0, c)),
@@ -70,18 +75,46 @@ fn parse_status_data(data: &str) -> Result<TotalSize, ParseError> {
     output
 }
 
-fn parse_csv_line(line: &str) -> Option<Result<(usize, usize), ParseError>> {
+fn extract_size_and_status(line: &str) -> Option<Result<(usize, usize), ParseError>> {
+    if let Some(result) = parse_csv_line(line) {
+        match result {
+            Ok(res) => if let Some(output) = convert_status(res) {
+                Some(Ok(output))
+            } else {
+                None
+            },
+            Err(err) => Some(Err(err))
+        }
+    } else {
+        None
+    }
+}
+
+fn convert_status(data: (usize, Option<usize>)) -> Option<(usize, usize)> {
+    let (size, status) = data;
+    if let Some(status) = status {
+        Some((size, status))
+    } else {
+        None
+    }
+}
+
+fn parse_csv_line(line: &str) -> Option<Result<(usize, Option<usize>), ParseError>> {
     let tokens: Vec<&str> = line.split(',').collect();
-    if tokens.len() == 3 && tokens[2].len() > 0 {
+    if tokens.len() == 3 {
         Some(convert_csv_line(&tokens))
     } else {
         None
     }
 }
 
-fn convert_csv_line(tokens: &[&str]) -> Result<(usize, usize), ParseError> {
+fn convert_csv_line(tokens: &[&str]) -> Result<(usize, Option<usize>), ParseError> {
     let count = tokens[1].parse()?;
-    let status = tokens[2].parse()?;
+    let status = if tokens[2].len() > 0 {
+        Some(tokens[2].parse()?)
+    } else {
+        None
+    };
     Ok((count, status))
 }
 

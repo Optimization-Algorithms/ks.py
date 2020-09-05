@@ -3,6 +3,8 @@ mod file_utils;
 mod log_parser;
 mod mps_parser;
 
+use std::io::{Write, stdout};
+use std::fs::File;
 use std::path::PathBuf;
 use structopt::{StructOpt, clap::ArgGroup};
 
@@ -17,12 +19,33 @@ struct ModelSize {
 }
 
 #[derive(Debug, StructOpt)]
-#[structopt(about = "Compute Continuous and Integer Feasibility Threshold")]
 struct Arguments {
     #[structopt(flatten)]
     mps_file: ModelSize,
     #[structopt(help = "CSV log file from Feature Kernel `LOG_FILE`")]
     log_file: PathBuf,
+    #[structopt(help = "Specify output file", short="-o", long="--output")]
+    output: Option<PathBuf>
+}
+
+
+#[derive(Debug, StructOpt)]
+#[structopt(about = "Compute USage Ratios, IFT and CFT")]
+enum Action {
+    #[structopt(about="compute IFT and CFT", name="thresh")]
+    FeasThreshold(Arguments),
+    #[structopt(about="compute Usage Ratios", name="ratio")]
+    UsageRatio(Arguments)
+}
+
+fn get_output(args: &Arguments) -> std::io::Result<Box<dyn Write>> {
+    let output: Box<dyn Write> = if let Some(ref name) = &args.output {
+        Box::new(File::create(name)?)
+    } else {    
+        Box::new(stdout())
+    };
+
+    Ok(output)
 }
 
 
@@ -32,8 +55,6 @@ fn average(counter: log_parser::TotalCount) -> Option<f64> {
     } else {
         Some((counter.total as f64) / (counter.count as f64))
     }
-    
-    
 }
 
 fn get_ratio(counter: log_parser::TotalCount, size: usize) -> Option<f64> {
@@ -41,23 +62,36 @@ fn get_ratio(counter: log_parser::TotalCount, size: usize) -> Option<f64> {
     Some(avg / (size as f64))
 }
 
-fn print_index(name: &str, value: Option<f64>) {
-    print!("{}: ", name);
+fn print_index(name: &str, value: Option<f64>, output: &mut dyn Write) -> Result<(), error::ParseError> {
+    write!(output, "{}: ", name)?;
     if let Some(value) = value {
-        println!("{}", value);   
+        writeln!(output, "{}", value)?;   
     } else {
-        println!("UNDEFINED");
+        writeln!(output, "UNDEFINED")?;
+    }
+    Ok(())
+}
+
+fn variable_count(mps_file: &ModelSize) -> Result<usize, error::ParseError> {
+    if let Some(count) = mps_file.size {
+        Ok(count)
+    } else if let Some(ref file) = mps_file.file {
+        mps_parser::get_variable_count(file)
+    } else {
+        unreachable!()
     }
 }
 
+fn compute_usage_ratio(args: Arguments) -> Result<Vec<(f64, Option<usize>)>, error::ParseError> {
+    let count = variable_count(&args.mps_file)? as f64;
+    let vect = log_parser::get_model_sizes(&args.log_file)?;
+    let output = vect.iter().map(|(curr, status)| ((*curr as f64) / count, *status)).collect();
+    Ok(output)
+}
+
+
 fn run_file_parse(args: Arguments) -> Result<(usize, log_parser::TotalSize), error::ParseError> {
-    let count = if let Some(count) = args.mps_file.size {
-        count
-    } else if let Some(file) = args.mps_file.file {
-        mps_parser::get_variable_count(&file)?
-    } else {
-        unreachable!()
-    };
+    let count = variable_count(&args.mps_file)?;
     let tot_size = log_parser::get_average_sizes(&args.log_file)?;
     Ok((count, tot_size))
 }
@@ -84,24 +118,47 @@ fn warn_size(cft: &Option<f64>, ift: &Option<f64>) {
     }
 }
 
-fn run() -> Result<(), error::ParseError> {
-    let args = Arguments::from_args();
-
+fn run_threshold(args: Arguments) -> Result<(), error::ParseError> {
+    let mut output = get_output(&args)?;
     let (count, tot_size) = run_file_parse(args)?;
-    println!("Model Size: {}", count);
+    writeln!(&mut output, "Model Size: {}", count)?;
 
     let continuous_threshold = get_ratio(tot_size.continuous, count);
     let integer_threshold = get_ratio(tot_size.integer, count);
 
     warn_size(&continuous_threshold, &integer_threshold);
 
-    print_index("CFT", continuous_threshold);
-    print_index("IFT", integer_threshold);
+    print_index("CFT", continuous_threshold, &mut output)?;
+    print_index("IFT", integer_threshold, &mut output)?;
+    
     Ok(())
 }
 
-fn main() {
 
+fn run_usage(args: Arguments) -> Result<(), error::ParseError> {
+
+    let mut output = get_output(&args)?;
+    let usage_ratio = compute_usage_ratio(args)?;
+    for (ratio, status) in usage_ratio {
+        if let Some(stat) = status {
+            writeln!(&mut output, "{},{}", ratio, stat)?;
+        } else {
+            writeln!(&mut output, "{},", ratio)?;
+        }
+        
+    }
+    Ok(())
+}
+
+fn run() -> Result<(), error::ParseError> {
+    let args = Action::from_args();
+    match args {
+        Action::FeasThreshold(arg) => run_threshold(arg),
+        Action::UsageRatio(arg) => run_usage(arg)
+    }
+}
+
+fn main() {
     match run() {
         Ok(()) => {}
         Err(err) => println!("{}", err),
