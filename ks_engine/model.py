@@ -118,7 +118,9 @@ class Model:
         return len(tmp)
 
     def reach_solution_limit(self):
-        return self.stat == gurobipy.GRB.status.SOLUTION_LIMIT
+        time_limit = self.stat == gurobipy.GRB.status.SOLUTION_LIMIT
+        optimal = self.stat == gurobipy.GRB.status.OPTIMAL
+        return time_limit or optimal
 
     def reach_time_limit(self):
         return self.stat == gurobipy.GRB.status.TIME_LIMIT

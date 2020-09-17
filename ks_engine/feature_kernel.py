@@ -59,7 +59,7 @@ def init_feature_kernel(mps_file, config):
             f"Unable to find valid subsets in {model_count} iteration, try to increase this number"
         )
 
-    if search_time_limit:
+    if search_time_limit is not None:
         config["TIME_LIMIT"] = search_time_limit
     else:
         config.pop("TIME_LIMIT", None)
