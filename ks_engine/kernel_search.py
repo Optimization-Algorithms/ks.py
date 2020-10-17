@@ -2,7 +2,7 @@
 
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
-from .model import Model
+from .model import Model, model_loarder
 from .solution import DebugIndex
 from .feature_kernel import init_feature_kernel
 from collections import namedtuple
@@ -30,8 +30,8 @@ def run_solution(model, config):
     return stat
 
 
-def init_kernel(mps_file, config, kernel_builder, kernel_sort):
-    lp_model = Model(mps_file, config, True)
+def init_kernel(model, config, kernel_builder, kernel_sort, mps_file):
+    lp_model = Model(model, config, True)
     stat = run_solution(lp_model, config)
 
     if not stat:
@@ -45,7 +45,7 @@ def init_kernel(mps_file, config, kernel_builder, kernel_sort):
         base, values, kernel_sort, config["KERNEL_SORTER_CONF"], **config["KERNEL_CONF"]
     )
 
-    int_model = Model(mps_file, config, False)
+    int_model = Model(model, config, False)
     if config.get("PRELOAD_FILE"):
         int_model.preload_from_file()
         
@@ -72,9 +72,9 @@ def update_kernel(base_kernel, bucket, solution, null):
 
 
 def run_extension(
-    mps_file, config, kernel, bucket, solution, bucket_index, iteration_index
+    model, config, kernel, bucket, solution, bucket_index, iteration_index
 ):
-    model = Model(mps_file, config)
+    model = Model(model, config)
     model.disable_variables(kernel)
     model.add_bucket_contraints(solution, bucket)
     model.preload_solution(solution)
@@ -92,12 +92,12 @@ def run_extension(
     return solution
 
 
-def initialize(mps_file, conf, methods):
+def initialize(model, conf, methods, mps_file):
     if conf.get("FEATURE_KERNEL"):
-        curr_sol, base_kernel, values = init_feature_kernel(mps_file, conf)
+        curr_sol, base_kernel, values = init_feature_kernel(model, conf)
     else:
         curr_sol, base_kernel, values = init_kernel(
-            mps_file, conf, methods.kernel_builder, methods.kernel_sort
+            model, conf, methods.kernel_builder, methods.kernel_sort, mps_file
         )
 
     if ill_kernel(base_kernel):
@@ -119,13 +119,13 @@ def ill_kernel(base_kernel):
     return kernel_size == model_size
 
 
-def solve_buckets(mps_file, config, curr_sol, base_kernel, buckets, iteration):
+def solve_buckets(model, config, curr_sol, base_kernel, buckets, iteration):
     
     for index, buck in enumerate(buckets):
         print(index)
         select_vars(base_kernel, buck)
         sol = run_extension(
-            mps_file, config, base_kernel, buck, curr_sol, index, iteration
+            model, config, base_kernel, buck, curr_sol, index, iteration
         )
         if sol:
             curr_sol = sol
@@ -173,14 +173,16 @@ def kernel_search(mps_file, config, kernel_methods):
     # init_feature_kernel(mps_file, config, None, None)
     # exit()
 
-    curr_sol, base_kernel, buckets = initialize(mps_file, config, kernel_methods)
+    main_model = model_loarder(mps_file, config)
+
+    curr_sol, base_kernel, buckets = initialize(main_model, config, kernel_methods, mps_file)
     iters = config["ITERATIONS"]
 
     if iters > 1:
         buckets = list(buckets)
     prev = None
     for i in range(iters):
-        curr_sol = solve_buckets(mps_file, config, curr_sol, base_kernel, buckets, i)
+        curr_sol = solve_buckets(main_model, config, curr_sol, base_kernel, buckets, i)
         if curr_sol is None:
             break
         elif prev is None:

@@ -2,18 +2,19 @@ PRELOAD: on
 LOG: on
 BUCKET: 'fixed'
 BUCKET_CONF:
-  count: 15
-ITERATIONS: 2
+  count: 125
+ITERATIONS: 4
 TIME_LIMIT: 30
-DEBUG: '30n20b8-run.csv'
-SOLUTION_FILE: '30n20b8-sol.sol'
+DEBUG: '30n20b8run.csv'
+SOLUTION_FILE: '30n20b8sol.sol'
 MIP_GAP: 4.0
+PRESOLVE: true
 
 
 FEATURE_KERNEL:
     COUNT: 150
     MIN_TIME: 10
-    MAX_TIME: 25
+    MAX_TIME: 20
     POLICY: 'min-infeasible'
-    LOG_FILE: '30n20b8-init.csv'
+    LOG_FILE: '30n20b8init.csv'
     

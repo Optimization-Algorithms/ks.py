@@ -21,6 +21,7 @@ DEFAULT_CONF = {
     "BUCKET_SORTER": "base_bucket_sort",
     "BUCKET_SORTER_CONF": {},
     "ITERATIONS": 1,
+    "PRESOLVE": False,
 }
 
 

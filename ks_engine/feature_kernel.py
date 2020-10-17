@@ -21,9 +21,9 @@ TIME_OUT = 2
 DEF_REL_SIZE = 0.01
 
 
-def init_feature_kernel(mps_file, config):
+def init_feature_kernel(model, config):
 
-    preload_model = Model(mps_file, config, False)
+    preload_model = Model(model, config, False)
     model_count = config["FEATURE_KERNEL"]["COUNT"]
     abs_size = int(preload_model.model_size() * DEF_REL_SIZE)
 
@@ -41,7 +41,7 @@ def init_feature_kernel(mps_file, config):
 
     var_names = get_variable_name_table(preload_model)
     solution_set = generate_model_solutions(
-        mps_file, config, var_names, model_count, abs_size, min_time, max_time
+        model, config, var_names, model_count, abs_size, min_time, max_time
     )
 
     if cache_file := config["FEATURE_KERNEL"].get("CACHE_FILE"):
@@ -97,7 +97,7 @@ def build_initial_kernel(var_name_table, kernel_var_names):
 
 
 def generate_model_solutions(
-    mps_file, config, var_names, count, size, min_time, max_time
+    model, config, var_names, count, size, min_time, max_time
 ):
 
     time_limit = min_time
@@ -109,7 +109,7 @@ def generate_model_solutions(
             config["TIME_LIMIT"] = time_limit
         
         selected = generate_random_sub_model(var_names, size)
-        result = solve_sub_model(mps_file, config, selected)
+        result = solve_sub_model(model, config, selected)
         logger.log_data(k, size, result)
         if result:
             sol, stat = result
@@ -156,13 +156,13 @@ def build_sklean_instance(solutions, var_count):
     return instances, classes
 
 
-def solve_sub_model(mps_file, config, selected_vars):
-    lin_model = Model(mps_file, config, True)
+def solve_sub_model(model, config, selected_vars):
+    lin_model = Model(model, config, True)
     lin_model.disable_variables(selected_vars)
     stat = lin_model.run()
     if stat:
         base_sol = lin_model.build_solution()
-        model = Model(mps_file, config, False, True)
+        model = Model(model, config, False, True)
         model.preload_solution(base_sol)
         model.disable_variables(selected_vars)
 
@@ -179,11 +179,11 @@ def solve_sub_model(mps_file, config, selected_vars):
 
     return None
 
-def load_model(mps_file, config, relax): 
+def load_model(model, config, relax): 
     if relax:
-        output = Model(mps_file, config, True, False)
+        output = Model(model, config, True, False)
     else:
-        output = Model(mps_file, config, False, True)
+        output = Model(model, config, False, True)
 
     if config["FEATURE_KERNEL"].get("PRELOAD_FILE"):
         output.preload_from_file()
@@ -248,8 +248,6 @@ def get_kernel_size(solution, policy):
             output = min(feasible)
     except ValueError:
         output = min((v.model_size for v in vals if v.status == INFEASIBLE or v.status == FEASIBLE))
-
-    print(output)
 
     return output
 
