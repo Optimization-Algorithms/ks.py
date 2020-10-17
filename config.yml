@@ -11,10 +11,10 @@ MIP_GAP: 4.0
 PRESOLVE: true
 
 
-FEATURE_KERNEL:
-    COUNT: 150
-    MIN_TIME: 10
-    MAX_TIME: 20
-    POLICY: 'min-infeasible'
-    LOG_FILE: '30n20b8init.csv'
+#FEATURE_KERNEL:
+#    COUNT: 150
+#    MIN_TIME: 10
+#    MAX_TIME: 20
+#    POLICY: 'min-infeasible'
+#    LOG_FILE: '30n20b8init.csv'
     
