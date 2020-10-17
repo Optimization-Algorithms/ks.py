@@ -20,18 +20,13 @@ GUROBI_PARAMS = {
     "MIP_GAP": "MIPGap",
 }
 
-class CacheTimeLimit:
-    def __init__(self):
-        self.tl = -1
-    
-    def cache_time_limit(self, config):
-        if config.get("TIME_LIMIT"):
-            self.tl = config["TIME_LIMIT"]
-            config["TIME_LIMIT"] = DEFAULT_CONF["TIME_LIMIT"]
-    
-    def restore_time_limit(self, config):
-        if self.tl != -1:
-            config["TIME_LIMIT"] = self.tl
+def reset_time_limit(config):
+    if config["TIME_LIMIT"] != DEFAULT_CONF["TIME_LIMIT"]:
+       output = config["TIME_LIMIT"]
+       config["TIME_LIMIT"] = DEFAULT_CONF["TIME_LIMIT"]
+    else:
+        output = None
+    return output
 
 
 def create_env(config):
@@ -51,14 +46,15 @@ def create_env(config):
 def model_loarder(mps_file, config):
     presolve = config["PRESOLVE"]
     if presolve:
-        tl_cache = CacheTimeLimit()
-        tl_cache.cache_time_limit(config)
+        tl = reset_time_limit(config)        
         model = gurobipy.read(mps_file, env=create_env(config))
         model.setParam("Presolve", 2)
         model.update()
         output = model.presolve()
+        if tl:
+            output.setParam("TimeLimit", tl)
+        output.setParam("Presolve", -1)
         output.update()
-        tl_cache.restore_time_limit(config)
     else:
         output = gurobipy.read(mps_file, env=create_env(config))
 
