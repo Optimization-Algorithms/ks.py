@@ -59,10 +59,15 @@ def init_kernel(model, config, kernel_builder, kernel_sort, mps_file):
 
     return out, kernel, values
 
+def add_remove_vars(base_kernel, bucket, add):
+    for var in bucket:
+        base_kernel[var] = add
 
 def select_vars(base_kernel, bucket):
-    for var in bucket:
-        base_kernel[var] = True
+    add_remove_vars(base_kernel, bucket, True)
+    
+def unselect_vars(base_kernel, bucket):
+    add_remove_vars(base_kernel, bucket, False)
 
 
 def update_kernel(base_kernel, bucket, solution, null):
@@ -111,6 +116,7 @@ def initialize(model, conf, methods, mps_file):
         conf["BUCKET_SORTER_CONF"],
         **conf["BUCKET_CONF"],
     )
+    
     return curr_sol, base_kernel, buckets
 
 def ill_kernel(base_kernel):
@@ -118,19 +124,47 @@ def ill_kernel(base_kernel):
     model_size = len(base_kernel)
     return kernel_size == model_size
 
+def print_kernel_size(kernel):
+    count = sum(1 if k else 0 for k in kernel.values())
+    print(f"{count}/{len(kernel)}")
+
 
 def solve_buckets(model, config, curr_sol, base_kernel, buckets, iteration):
-    
-    for index, buck in enumerate(buckets):
-        print(index)
+    #local_best = curr_sol
+    #best_kernel = base_kernel.copy()
+    for index,  buck in enumerate(buckets):
+
         select_vars(base_kernel, buck)
         sol = run_extension(
             model, config, base_kernel, buck, curr_sol, index, iteration
         )
+        print_kernel_size(base_kernel)
         if sol:
+            print(sol.value)
             curr_sol = sol
-            update_kernel(base_kernel, buck, curr_sol, 0)
+            #local_best = get_best_solution(curr_sol, local_best, model)
+            #update_kernel(base_kernel, buck, curr_sol, 0)
+        else:
+            print("No sol")
+            unselect_vars(base_kernel, buck)
+
     return curr_sol
+
+def get_best_solution(sol_a, sol_b, model):
+    if sol_a is None:
+        if sol_b is None:
+            return None
+        else:
+            return sol_b.copy()
+    elif sol_b is None:
+        return sol_a.copy()
+            
+
+    if model.getAttr('ModelSense') == 1:
+        tmp = sol_a if sol_a.value < sol_b.value else sol_b
+    else:
+        tmp = sol_a if sol_a.value > sol_b.value else sol_b
+    return tmp.copy()
 
 
 def kernel_search(mps_file, config, kernel_methods):
@@ -178,17 +212,28 @@ def kernel_search(mps_file, config, kernel_methods):
     curr_sol, base_kernel, buckets = initialize(main_model, config, kernel_methods, mps_file)
     iters = config["ITERATIONS"]
 
-    if iters > 1:
-        buckets = list(buckets)
+    #best_sol = curr_sol
     prev = curr_sol
     for i in range(iters):
+
         curr_sol = solve_buckets(main_model, config, curr_sol, base_kernel, buckets, i)
+        #best_sol = get_best_solution(curr_sol, best_sol, main_model)
+        #print(best_sol.value)
         if curr_sol is None:
             break
         elif prev is None:
             prev = curr_sol
         elif prev.value == curr_sol.value:
             print(f"FIXED POINT FOUND: {prev.value}")
+            
         prev = curr_sol
+        buckets = kernel_methods.bucket_builder(
+            base_kernel,
+            curr_sol,
+            kernel_methods.bucket_sort,
+            config["BUCKET_SORTER_CONF"],
+            **config["BUCKET_CONF"],
+        )
+
 
     return curr_sol

@@ -37,11 +37,14 @@ def main():
         print(err)
         exit(1)
     else:
-        if sol_file := conf["SOLUTION_FILE"]:
-            sol.save_as_sol_file(sol_file)
-            
-        print("Solution:", sol.value)
-        sol.debug.export_csv(conf["DEBUG"], False)
+        if sol is None:
+            print("Cannot find a solution")
+        else:
+            if sol_file := conf["SOLUTION_FILE"]:
+                sol.save_as_sol_file(sol_file)
+                
+            print("Solution:", sol.value)
+            sol.debug.export_csv(conf["DEBUG"], False)
 
 
 if __name__ == "__main__":

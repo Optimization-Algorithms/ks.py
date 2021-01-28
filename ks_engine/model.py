@@ -98,11 +98,11 @@ class Model:
             var = self.model.getVarByName(name)
             self.model.addConstr(var == value)
 
-    def add_bucket_contraints(self, solution, bucket):
+    def add_bucket_contraints(self, solution, bucket, cutoff=True):
         self.model.addConstr(
             gurobipy.quicksum(self.model.getVarByName(var) for var in bucket) >= 1
         )
-        if solution:
+        if solution and cutoff:
             self.model.setParam("Cutoff", solution.value)
 
     def build_solution(self, prev_sol=None):

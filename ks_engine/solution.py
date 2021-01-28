@@ -66,6 +66,9 @@ class Solution:
         self.value = value
         self.debug = DebugInfo()
 
+    def copy(self):
+        return Solution(self.value, self.vars.items())
+
     def get_value(self, name):
         return self.vars[name]
 
