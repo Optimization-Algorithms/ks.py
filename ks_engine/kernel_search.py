@@ -3,10 +3,12 @@
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
 from .model import Model, model_loarder
-from .solution import DebugIndex
+from .solution import DebugIndex, DebugInfo
+from .worsen_score import WorsenScore, MockWorsenScore
 from .feature_kernel import init_feature_kernel
 from collections import namedtuple
 import time
+import numpy
 
 KernelMethods = namedtuple(
     "KernelMethods", ["kernel_sort", "kernel_builder", "bucket_sort", "bucket_builder"],
@@ -77,11 +79,15 @@ def update_kernel(base_kernel, bucket, solution, null):
 
 
 def run_extension(
-    model, config, kernel, bucket, solution, bucket_index, iteration_index
+    model, config, kernel, bucket, solution, bucket_index, iteration_index, worst_sol, logger
 ):
     model = Model(model, config)
     model.disable_variables(kernel)
-    model.add_bucket_contraints(solution, bucket)
+    prob = worst_sol.get_probability()
+    cutoff = numpy.random.random() >= prob
+    if not cutoff:
+        print("Accept worst: ", worst_sol.score, worst_sol.total)
+    model.add_bucket_contraints(solution, bucket, cutoff)
     model.preload_solution(solution)
 
     stat = run_solution(model, config)
@@ -92,7 +98,7 @@ def run_extension(
     if config["DEBUG"]:
         debug_index = DebugIndex(iteration_index, bucket_index)
         debug_data = model.build_debug(sum(kernel.values()), len(bucket))
-        solution.update_debug_info(debug_index, debug_data)
+        logger.add_data(debug_data, debug_index)
 
     return solution
 
@@ -129,26 +135,29 @@ def print_kernel_size(kernel):
     print(f"{count}/{len(kernel)}")
 
 
-def solve_buckets(model, config, curr_sol, base_kernel, buckets, iteration):
-    #local_best = curr_sol
+def solve_buckets(model, config, curr_sol, base_kernel, buckets, iteration, worst_sol, logger):
+    local_best = curr_sol
     #best_kernel = base_kernel.copy()
     for index,  buck in enumerate(buckets):
 
         select_vars(base_kernel, buck)
         sol = run_extension(
-            model, config, base_kernel, buck, curr_sol, index, iteration
+            model, config, base_kernel, buck, curr_sol, index, iteration, worst_sol, logger
         )
         print_kernel_size(base_kernel)
         if sol:
             print(sol.value)
             curr_sol = sol
-            #local_best = get_best_solution(curr_sol, local_best, model)
+            worst_sol.increase_total()
+            local_best = get_best_solution(curr_sol, local_best, model)
             #update_kernel(base_kernel, buck, curr_sol, 0)
         else:
             print("No sol")
+            if curr_sol:
+                worst_sol.increase_score()
             unselect_vars(base_kernel, buck)
 
-    return curr_sol
+    return curr_sol, local_best
 
 def get_best_solution(sol_a, sol_b, model):
     if sol_a is None:
@@ -166,6 +175,12 @@ def get_best_solution(sol_a, sol_b, model):
         tmp = sol_a if sol_a.value > sol_b.value else sol_b
     return tmp.copy()
 
+def setup_worsen_solution(config):
+    if config.get('WORST-SOL'):
+        output = WorsenScore(config['ITERATIONS'])
+    else:
+        output = MockWorsenScore(0)
+    return output
 
 def kernel_search(mps_file, config, kernel_methods):
     """
@@ -212,19 +227,26 @@ def kernel_search(mps_file, config, kernel_methods):
     curr_sol, base_kernel, buckets = initialize(main_model, config, kernel_methods, mps_file)
     iters = config["ITERATIONS"]
 
-    #best_sol = curr_sol
+    worst_sol = setup_worsen_solution(config)
+    if config.get("DEBUG"):
+        logger = DebugInfo()
+    else:
+        logger = None
+
+    best_sol = curr_sol
     prev = curr_sol
     for i in range(iters):
 
-        curr_sol = solve_buckets(main_model, config, curr_sol, base_kernel, buckets, i)
-        #best_sol = get_best_solution(curr_sol, best_sol, main_model)
-        #print(best_sol.value)
+        curr_sol, curr_best = solve_buckets(main_model, config, curr_sol, base_kernel, buckets, i, worst_sol, logger)
+        best_sol = get_best_solution(curr_best, best_sol, main_model)
         if curr_sol is None:
             break
         elif prev is None:
             prev = curr_sol
         elif prev.value == curr_sol.value:
+            worst_sol.increase_score()
             print(f"FIXED POINT FOUND: {prev.value}")
+
             
         prev = curr_sol
         buckets = kernel_methods.bucket_builder(
@@ -235,5 +257,6 @@ def kernel_search(mps_file, config, kernel_methods):
             **config["BUCKET_CONF"],
         )
 
-
-    return curr_sol
+    if best_sol:
+        best_sol.set_debug_info(logger)
+    return best_sol

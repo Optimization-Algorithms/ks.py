@@ -64,7 +64,7 @@ class Solution:
     def __init__(self, value, var_iter):
         self.vars = {k: v for k, v in var_iter}
         self.value = value
-        self.debug = DebugInfo()
+        self.debug = None
 
     def copy(self):
         return Solution(self.value, self.vars.items())
@@ -76,6 +76,9 @@ class Solution:
         self.value = value
         for k, v in var_iter:
             self.vars[k] = v
+
+    def set_debug_info(self, debug):
+        self.debug = debug
 
     def update_debug_info(self, index, debug_info):
         self.debug.add_data(debug_info, index)

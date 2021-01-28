@@ -1,20 +1,14 @@
 PRELOAD: on
-LOG: off
+LOG: on
 BUCKET: 'fixed'
 BUCKET_CONF:
-  count: 15
-ITERATIONS: 6
-TIME_LIMIT: 30
-DEBUG: 'irish-run.csv'
-SOLUTION_FILE: 'irish-sol.sol'
+  count: 2
+ITERATIONS: 4
+TIME_LIMIT: 50
+DEBUG: 'bab6-no-worst-run.csv'
+SOLUTION_FILE: 'bab6-no-worst-sol.sol'
 MIP_GAP: 4.0
 PRESOLVE: true
+WORST-SOL: false
 
-
-#FEATURE_KERNEL:
-#    COUNT: 150
-#    MIN_TIME: 10
-#    MAX_TIME: 20
-#    POLICY: 'min-infeasible'
-#    LOG_FILE: 'in-init.csv'
-    
+   
