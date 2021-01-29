@@ -91,7 +91,15 @@ class Model:
         self.model.optimize()
         stat = self.model.status
         self.stat = stat
-        return stat == gurobipy.GRB.status.OPTIMAL
+        obj = self.model.getObjective()
+        try:
+            obj.getValue()
+        except AttributeError:
+            output = False
+        else:
+            output = True
+
+        return output
 
     def disable_variables(self, base_kernel, value=0):
         for name, _ in filter(lambda x: not x[1], base_kernel.items()):

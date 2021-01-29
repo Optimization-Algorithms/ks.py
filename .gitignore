@@ -5,6 +5,7 @@ __pycache__/
 gurobi.log
 ks_engine/__pycache__/
 instances/*
+test-config/*
 *.csv
 *.dat
 *.sol

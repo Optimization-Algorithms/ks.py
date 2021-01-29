@@ -150,12 +150,15 @@ def solve_buckets(model, config, curr_sol, base_kernel, buckets, iteration, wors
             curr_sol = sol
             worst_sol.increase_total()
             local_best = get_best_solution(curr_sol, local_best, model)
-            #update_kernel(base_kernel, buck, curr_sol, 0)
+            if config.get('REMOVE-UNSET'):
+                update_kernel(base_kernel, buck, curr_sol, 0)
         else:
             print("No sol")
             if curr_sol:
                 worst_sol.increase_score()
-            unselect_vars(base_kernel, buck)
+            allow_kernel_growth = curr_sol is None and config.get('KERNEL-GROWTH')
+            if not allow_kernel_growth:
+                unselect_vars(base_kernel, buck)
 
     return curr_sol, local_best
 
