@@ -5,7 +5,9 @@ __pycache__/
 gurobi.log
 ks_engine/__pycache__/
 instances/*
+sphinx_doc/build/
 *.csv
 *.dat
 *.sol
 *.sh
+
