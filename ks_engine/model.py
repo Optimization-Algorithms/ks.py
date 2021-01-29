@@ -20,10 +20,11 @@ GUROBI_PARAMS = {
     "MIP_GAP": "MIPGap",
 }
 
+
 def reset_time_limit(config):
     if config["TIME_LIMIT"] != DEFAULT_CONF["TIME_LIMIT"]:
-       output = config["TIME_LIMIT"]
-       config["TIME_LIMIT"] = DEFAULT_CONF["TIME_LIMIT"]
+        output = config["TIME_LIMIT"]
+        config["TIME_LIMIT"] = DEFAULT_CONF["TIME_LIMIT"]
     else:
         output = None
     return output
@@ -37,7 +38,7 @@ def create_env(config):
     for k, v in GUROBI_PARAMS.items():
         def_val = DEFAULT_CONF[k]
         conf = config[k]
-        if conf != def_val: 
+        if conf != def_val:
             env.setParam(v, conf)
 
     return env
@@ -46,7 +47,7 @@ def create_env(config):
 def model_loarder(mps_file, config):
     presolve = config["PRESOLVE"]
     if presolve:
-        tl = reset_time_limit(config)        
+        tl = reset_time_limit(config)
         model = gurobipy.read(mps_file, env=create_env(config))
         model.setParam("Presolve", 2)
         model.update()
@@ -78,7 +79,6 @@ class Model:
     def preload_from_file(self):
         if self.sol_file and os.path.isfile(self.sol_file):
             self.model.read(self.sol_file)
-
 
     def preload_solution(self, sol=None):
         if not self.preload or sol is None:

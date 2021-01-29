@@ -1,5 +1,6 @@
 #! /usr/bin/python
 
+
 class AbstractWorsenScore:
     def __init__(self, total):
         self.score = 0
@@ -10,13 +11,12 @@ class AbstractWorsenScore:
 
     def increase_total(self):
         self.total += 1
-    
+
     def increase_score(self):
         self.score += 1
 
 
 class WorsenScore(AbstractWorsenScore):
-
     def __init__(self, total):
         super().__init__(total)
 
@@ -25,18 +25,9 @@ class WorsenScore(AbstractWorsenScore):
         return prob
 
 
-
-
 class MockWorsenScore(AbstractWorsenScore):
-
     def __init__(self, total):
         super().__init__(total)
 
     def get_probability(self):
         return 0
-
-    
-
-
-
-

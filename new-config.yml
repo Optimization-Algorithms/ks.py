@@ -5,11 +5,11 @@ BUCKET_CONF:
   count: 20
 ITERATIONS: 10
 TIME_LIMIT: 15
-DEBUG: 'neos-3656078-kumeu-worst-run.csv'
-SOLUTION_FILE: 'neos-3656078-kumeu-worst-sol.sol'
+DEBUG: 'atlanta-ip-run.csv'
+SOLUTION_FILE: 'atlanta-ip-sol.sol'
 MIP_GAP: 4.0
 PRESOLVE: true
-WORST-SOL: true
-KERNEL-GROWTH: true
+WORST-SOL: false
+KERNEL-GROWTH: false
 REMOVE-UNSET: true
    

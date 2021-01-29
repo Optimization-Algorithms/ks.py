@@ -15,7 +15,7 @@ DEFAULT_CONF = {
     "BUCKET_CONF": {"size": 10},
     "PRELOAD": True,
     "LOG": False,
-    "DEBUG": '',
+    "DEBUG": "",
     "KERNEL_SORTER": "base_kernel_sort",
     "KERNEL_SORTER_CONF": {},
     "BUCKET_SORTER": "base_bucket_sort",
@@ -46,15 +46,15 @@ def load_config(file_name):
     Raises
     ------
     ValueError
-        if some variable in the given configuration 
-        does not  have the same type of the variables 
-        in the default configuration. Other variables 
+        if some variable in the given configuration
+        does not  have the same type of the variables
+        in the default configuration. Other variables
         are not checked.
-    
+
     Returns
     -------
     config: dict
-        map configuration variable name into 
+        map configuration variable name into
         their values
     """
     if not file_name:

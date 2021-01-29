@@ -96,9 +96,7 @@ def build_initial_kernel(var_name_table, kernel_var_names):
     return var_name_table
 
 
-def generate_model_solutions(
-    model, config, var_names, count, size, min_time, max_time
-):
+def generate_model_solutions(model, config, var_names, count, size, min_time, max_time):
 
     time_limit = min_time
     logger = feature_logger_factory(config["FEATURE_KERNEL"].get("LOG_FILE"))
@@ -107,7 +105,7 @@ def generate_model_solutions(
         print("iter", k)
         if time_limit:
             config["TIME_LIMIT"] = time_limit
-        
+
         selected = generate_random_sub_model(var_names, size)
         result = solve_sub_model(model, config, selected)
         logger.log_data(k, size, result)
@@ -130,9 +128,9 @@ def generate_model_solutions(
             if time_limit < max_time:
                 time_limit += 1
             size = size_grow_function(size, len(var_names))
-        
+
         if size > len(var_names):
-                size = len(var_names)
+            size = len(var_names)
 
     logger.save()
     return solution_set
@@ -179,7 +177,8 @@ def solve_sub_model(model, config, selected_vars):
 
     return None
 
-def load_model(model, config, relax): 
+
+def load_model(model, config, relax):
     if relax:
         output = Model(model, config, True, False)
     else:
@@ -189,6 +188,7 @@ def load_model(model, config, relax):
         output.preload_from_file()
 
     return output
+
 
 def generate_random_sub_model(var_names, count):
     if count == len(var_names):
@@ -200,17 +200,19 @@ def generate_random_sub_model(var_names, count):
     output = {k: None for k, v in var_names.items() if not v}
     return output
 
+
 def random_select(var_names, count):
     for k in var_names.keys():
         var_names[k] = False
     rng = secrets.SystemRandom()
-    
+
     selected = rng.sample(var_names.keys(), count)
-    
+
     for sel in selected:
         var_names[sel] = True
 
     return var_names
+
 
 def get_variable_name_table(model):
     return {var.varName: False for var in model.model.getVars()}
@@ -247,13 +249,19 @@ def get_kernel_size(solution, policy):
         else:
             output = min(feasible)
     except ValueError:
-        output = min((v.model_size for v in vals if v.status == INFEASIBLE or v.status == FEASIBLE))
+        output = min(
+            (
+                v.model_size
+                for v in vals
+                if v.status == INFEASIBLE or v.status == FEASIBLE
+            )
+        )
 
     return output
+
 
 def size_grow_function(curr_size, model_size):
     ratio = curr_size / model_size
     ratio = ratio ** (4 / 5)
     curr_size = int(model_size * ratio)
     return curr_size
-

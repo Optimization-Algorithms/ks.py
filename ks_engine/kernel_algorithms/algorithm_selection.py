@@ -11,7 +11,7 @@ class Selector:
 
     """
     Selector allows client code to safely choose between available
-    algorithms. 
+    algorithms.
     """
 
     def __init__(self, base_store, default):
@@ -31,11 +31,11 @@ class Selector:
     def add_algorithm(self, name, function):
         """
         Insert a new algorithm in the store, if not present
-        
+
         Parameters
         ----------
         name: str
-            new algorithm name, must be different from 
+            new algorithm name, must be different from
             the corrently available
         function: callable
             the algorithm implementation, although not required it
@@ -64,8 +64,8 @@ class Selector:
 
         Returns
         -------
-            the function associated to the given name if 
-            it is available, None otherwise. 
+            the function associated to the given name if
+            it is available, None otherwise.
         """
         return self.store.get(name)
 

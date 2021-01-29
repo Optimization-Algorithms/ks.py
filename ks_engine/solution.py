@@ -97,11 +97,10 @@ class Solution:
 
 
 def get_solution_file_name(file_name):
-    if file_name is None: 
+    if file_name is None:
         return None
-    
-    if file_name.endswith('.sol'):
+
+    if file_name.endswith(".sol"):
         return file_name
     else:
         return f"{file_name}.sol"
-

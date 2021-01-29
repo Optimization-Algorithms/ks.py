@@ -14,6 +14,7 @@ from ks_engine.kernel_algorithms.base_bucket import (
 from ks_engine.kernel_algorithms.base_sort import bucket_sort, cheb_sort
 from ks_engine.solution import Solution
 
+
 def build_kernel_fixed_size():
     kernel = {k: i % 2 == 0 for i, k in enumerate(ascii_letters)}
     values = Solution(0, ((k, randbelow(100)) for k in ascii_letters))
@@ -24,8 +25,8 @@ class TestChebSort(unittest.TestCase):
     def test_cheb_sort(self):
         kernel, values = build_kernel_fixed_size()
         vals = cheb_sort(kernel, values)
-        
-        
+
+
 class TestBucketSorting(unittest.TestCase):
     def test_sorter(self):
         kernel, values = build_kernel_fixed_size()
@@ -42,7 +43,7 @@ class TestBucketSorting(unittest.TestCase):
 class TestBaseBucket(unittest.TestCase):
     def test_buckets_correct_size(self):
         """
-        in this test the bucket size 
+        in this test the bucket size
         is a divisor of number of variables
         out of the kernel
         """
@@ -57,7 +58,7 @@ class TestBaseBucket(unittest.TestCase):
 
     def test_buckets_wrong_size(self):
         """
-        in this test the bucket size 
+        in this test the bucket size
         is NOT a divisor of number of variables
         out of the kernel
         """

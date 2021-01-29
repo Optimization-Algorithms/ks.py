@@ -4,18 +4,18 @@ import csv
 
 
 class Logger:
-
     def log_data(self, *data):
         pass
 
     def save(self):
         pass
 
+
 class MockLogger(Logger):
     pass
 
-class CSVFeatureLogger(Logger):
 
+class CSVFeatureLogger(Logger):
     def __init__(self, file_name):
         super().__init__()
         self.log = []
@@ -32,16 +32,10 @@ class CSVFeatureLogger(Logger):
             csv_writer = csv.writer(file)
             for entry in self.log:
                 csv_writer.writerow(entry)
-    
+
 
 def feature_logger_factory(file_name):
     if file_name:
         return CSVFeatureLogger(file_name)
     else:
         return MockLogger()
-                
-
-
-
-
-

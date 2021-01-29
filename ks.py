@@ -42,7 +42,7 @@ def main():
         else:
             if sol_file := conf["SOLUTION_FILE"]:
                 sol.save_as_sol_file(sol_file)
-                
+
             print("Solution:", sol.value)
             sol.debug.export_csv(conf["DEBUG"], False)
 

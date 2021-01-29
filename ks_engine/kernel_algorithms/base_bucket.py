@@ -11,7 +11,9 @@ def fixed_size_bucket(base, values, sorter, sorter_conf, size=1, count=0):
     if count:
         size = length // count
     if size == 0:
-        raise ValueError(f"Variable outside kernel [{length}] are not enough for {count} buckets")
+        raise ValueError(
+            f"Variable outside kernel [{length}] are not enough for {count} buckets"
+        )
 
     start = 0
     while start < length:
@@ -26,7 +28,9 @@ def decresing_size_bucket(base, values, sorter, sorter_conf, count):
     length = len(variables)
     size = math.floor(length / blocks)
     if size == 0:
-        raise ValueError(f"Variable outside kernel [{length}] are not enough for {count} buckets")
+        raise ValueError(
+            f"Variable outside kernel [{length}] are not enough for {count} buckets"
+        )
 
     start = 0
     blocks = 1 << (count - 1)
