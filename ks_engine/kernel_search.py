@@ -9,6 +9,7 @@ from .model import Model, model_loarder
 from .solution import DebugIndex, DebugInfo
 from .worsen_score import WorsenScore, MockWorsenScore
 from .feature_kernel import init_feature_kernel
+from .constraint_manager import ConstrainManager
 
 
 KernelMethods = namedtuple(
@@ -124,6 +125,7 @@ def run_extension(
     model.preload_solution(instance.current_solution)
 
     stat = run_solution(model, instance.config)
+    print(model.get_status())
     if not stat:
         return None
 
@@ -186,7 +188,7 @@ def solve_buckets(instance, iteration):
                 update_kernel(instance.kernel, buck, instance.current_solution, 0)
         else:
             print("No sol")
-            #if instance.current_solution:
+            # if instance.current_solution:
             #    instance.worsen_score.increase_score()
             allow_kernel_growth = (
                 instance.current_solution is None
@@ -266,6 +268,7 @@ def kernel_search(mps_file, config, kernel_methods):
     curr_sol, base_kernel, buckets = initialize(
         main_model, config, kernel_methods, mps_file
     )
+    buckets = list(buckets)
     iters = config["ITERATIONS"]
 
     worst_sol = setup_worsen_solution(config)
@@ -277,9 +280,15 @@ def kernel_search(mps_file, config, kernel_methods):
     best_sol = curr_sol
     prev = curr_sol
 
+    constr_manager = ConstrainManager()
+
+    if curr_sol is None and config.get("PROBLEM-KICKSTART"):
+        constr_manager.find_violated_constraint(main_model, config, base_kernel)
+        
     for i in range(iters):
+        tmp_model = constr_manager.remove_constrains(main_model)
         instance = KernelSearchInstance(
-            main_model,
+            tmp_model,
             kernel_methods,
             base_kernel,
             buckets,
@@ -291,26 +300,33 @@ def kernel_search(mps_file, config, kernel_methods):
         curr_sol, curr_best = solve_buckets(instance, i)
         best_sol = get_best_solution(curr_best, best_sol, main_model)
         if curr_sol is None:
-            break
-        if prev is None:
-            prev = curr_sol
-            instance.worsen_score.increase_total()
-        elif prev.value == curr_sol.value:
-            worst_sol.increase_score()
-            print(f"FIXED POINT FOUND: {prev.value}")
+            if not (config.get("PROBLEM-KICKSTART") and prev is None):
+                break
         else:
-            instance.worsen_score.increase_total()
-            
+            constr_manager.clean()
+            if prev is None:
+                prev = curr_sol
+                instance.worsen_score.increase_total()
+            elif prev.value == curr_sol.value:
+                worst_sol.increase_score()
+                print(f"FIXED POINT FOUND: {prev.value}")
+            else:
+                instance.worsen_score.increase_total()
+
         prev = curr_sol
-        buckets = kernel_methods.bucket_builder(
-            base_kernel,
-            curr_sol,
-            kernel_methods.bucket_sort,
-            config["BUCKET_SORTER_CONF"],
-            **config["BUCKET_CONF"],
-        )
+        if curr_sol:
+            buckets = kernel_methods.bucket_builder(
+                base_kernel,
+                curr_sol,
+                kernel_methods.bucket_sort,
+                config["BUCKET_SORTER_CONF"],
+                **config["BUCKET_CONF"],
+            )
 
     if best_sol:
         best_sol.set_debug_info(logger)
+
+    if not constr_manager.is_accetable_model():
+        best_sol = None
 
     return best_sol

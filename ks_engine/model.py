@@ -158,3 +158,24 @@ class Model:
 
     def reach_time_limit(self):
         return self.stat == gurobipy.GRB.status.TIME_LIMIT
+
+    def get_status(self):
+        status_messages = [
+            "LOADED",
+            "OPTIMAL",
+            "INFEASIBLE",
+            "INF_OR_UNBD",
+            "UNBOUNDED",
+            "CUTOFF",
+            "ITERATION_LIMIT",
+            "NODE_LIMIT",
+            "TIME_LIMIT",
+            "SOLUTION_LIMIT",
+            "INTERRUPTED",
+            "NUMERIC",
+            "SUBOPTIMAL",
+            "INPROGRESS",
+            "USER_OBJ_LIMIT",
+        ]
+        stat = self.stat - 1
+        return status_messages[stat]

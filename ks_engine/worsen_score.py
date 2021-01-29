@@ -13,7 +13,7 @@ class AbstractWorsenScore:
         self.total += 1
 
     def increase_score(self):
-        self.score += 1
+        self.score = (self.score + 1) % self.total
 
 
 class WorsenScore(AbstractWorsenScore):
