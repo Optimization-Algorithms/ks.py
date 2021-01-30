@@ -223,6 +223,12 @@ def setup_worsen_solution(config):
     return output
 
 
+def distill_kernel(kernel, sol, null=0):
+    for k, v in sol.vars.items():
+        if v == null:
+            kernel[k] = False
+
+
 def kernel_search(mps_file, config, kernel_methods):
     """
     Run Kernel Search Heuristic
@@ -284,7 +290,7 @@ def kernel_search(mps_file, config, kernel_methods):
 
     if curr_sol is None and config.get("PROBLEM-KICKSTART"):
         constr_manager.find_violated_constraint(main_model, config, base_kernel)
-        
+
     for i in range(iters):
         tmp_model = constr_manager.remove_constrains(main_model)
         instance = KernelSearchInstance(
@@ -322,6 +328,9 @@ def kernel_search(mps_file, config, kernel_methods):
                 config["BUCKET_SORTER_CONF"],
                 **config["BUCKET_CONF"],
             )
+
+        if config.get("DISTILL") and curr_sol is not None:
+            distill_kernel(base_kernel, curr_sol)
 
     if best_sol:
         best_sol.set_debug_info(logger)

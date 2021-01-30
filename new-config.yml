@@ -5,12 +5,12 @@ BUCKET_CONF:
   count: 35
 ITERATIONS: 10
 TIME_LIMIT: 15
-DEBUG: 'irish-ip-kickstart-worsen-new-run.csv'
-SOLUTION_FILE: 'irish-ip-kickstart-new-worsen-sol.sol'
+DEBUG: 'irish-ip-worsen-new-distill-run.csv'
+SOLUTION_FILE: 'irish-ip-new-worsen-distill-sol.sol'
 MIP_GAP: 4.0
 PRESOLVE: true
 WORST-SOL: true
 KERNEL-GROWTH: true
 REMOVE-UNSET: true
-PROBLEM-KICKSTART: true
-
+PROBLEM-KICKSTART: false
+DISTILL: true
