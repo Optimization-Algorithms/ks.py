@@ -5,15 +5,16 @@ import subprocess
 import time
 import os
 
-class Timer:
 
+class Timer:
     def __init__(self):
         self.start = time.time_ns()
-    
+
     def stop(self):
         end = time.time_ns()
         duration = (end - self.start) / 1e9
         return duration
+
 
 def run_instances(instance, configs):
     exec_time = {}
@@ -37,12 +38,13 @@ def save_results(exec_time, output_file):
         for conf, result in exec_time.items():
             print(f"{conf},{result}", file=file)
 
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Run ks.py with the given set of configurations"
     )
     parser.add_argument("-i", "--instance", required=True)
-    parser.add_argument("-c", "--config", nargs='+')
+    parser.add_argument("-c", "--config", nargs="+")
     parser.add_argument("-o", "--output")
 
     return parser.parse_args()

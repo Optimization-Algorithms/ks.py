@@ -1,12 +1,12 @@
 PRELOAD: on
-LOG: off
+LOG: on
 BUCKET: 'fixed'
 BUCKET_CONF:
   count: 35
 ITERATIONS: 2
 TIME_LIMIT: 15
-DEBUG: 'bg5112142-run.csv'
-SOLUTION_FILE: 'bg5112142-sol.sol'
+DEBUG: 'sct32-run.csv'
+SOLUTION_FILE: 'sct32-sol.sol'
 MIP_GAP: 4.0
 PRESOLVE: true
 WORST-SOL: false
