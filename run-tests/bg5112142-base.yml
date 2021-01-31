@@ -1,0 +1,18 @@
+iterations: 10
+bucket_count: 35
+time_limit: 15
+base_name: bg512142
+parameters:
+  - - WORST-SOL
+    - Variable
+  - - KERNEL-GROWTH
+    - Constant: true
+  - - REMOVE-UNSET
+    - Constant: true
+  - - PROBLEM-KICKSTART
+    - Variable
+  - - DISTILL
+    - Variable
+
+
+
