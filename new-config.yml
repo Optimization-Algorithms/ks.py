@@ -2,11 +2,11 @@ PRELOAD: on
 LOG: on
 BUCKET: 'fixed'
 BUCKET_CONF:
-  count: 35
+  count: 20
 ITERATIONS: 2
-TIME_LIMIT: 15
-DEBUG: 'sct32-run.csv'
-SOLUTION_FILE: 'sct32-sol.sol'
+TIME_LIMIT: 30
+DEBUG: 'probportfolio-run.csv'
+SOLUTION_FILE: 'probportfolio-sol.sol'
 MIP_GAP: 4.0
 PRESOLVE: true
 WORST-SOL: false
