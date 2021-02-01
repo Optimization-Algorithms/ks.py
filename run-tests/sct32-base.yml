@@ -1,0 +1,15 @@
+iterations: 10
+bucket_count: 35
+time_limit: 15
+base_name: sct-32
+parameters:
+  - - WORST-SOL
+    - Variable
+  - - KERNEL-GROWTH
+    - Variable
+  - - REMOVE-UNSET
+    - Constant: true
+  - - PROBLEM-KICKSTART
+    - Variable
+  - - DISTILL
+    - Variable

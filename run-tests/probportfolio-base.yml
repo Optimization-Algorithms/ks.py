@@ -1,0 +1,15 @@
+iterations: 7
+bucket_count: 20
+time_limit: 30
+base_name: probportfolio
+parameters:
+  - - WORST-SOL
+    - Variable
+  - - KERNEL-GROWTH
+    - Constant: true
+  - - REMOVE-UNSET
+    - Constant: true
+  - - PROBLEM-KICKSTART
+    - Variable
+  - - DISTILL
+    - Variable
