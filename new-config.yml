@@ -1,15 +1,16 @@
 PRELOAD: on
-LOG: on
+LOG: off
 BUCKET: 'fixed'
 BUCKET_CONF:
   count: 20
 ITERATIONS: 2
-TIME_LIMIT: 30
+TIME_LIMIT: 10
+
 DEBUG: 'probportfolio-run.csv'
 SOLUTION_FILE: 'probportfolio-sol.sol'
 MIP_GAP: 4.0
 PRESOLVE: true
-WORST-SOL: false
+WORST-SOL: true
 KERNEL-GROWTH: true
 REMOVE-UNSET: true
 PROBLEM-KICKSTART: false

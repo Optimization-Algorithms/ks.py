@@ -67,7 +67,6 @@ def store_test_config(name, config_files):
             os.chdir(prev_dir)
 
 
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("name")

@@ -87,6 +87,9 @@ class Model:
         for name, value in sol.vars.items():
             self.model.getVarByName(name).start = value
 
+    def set_time_limit(self, time_limit):
+        self.model.setParam("TimeLimit", time_limit)
+
     def run(self):
         self.model.optimize()
         stat = self.model.status

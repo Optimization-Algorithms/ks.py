@@ -41,20 +41,41 @@ class KernelSearchInstance:
 
 
 def run_solution(model, config):
-    begin = time.time_ns()
-    stat = model.run()
-    end = time.time_ns()
-    if config["TIME_LIMIT"] != -1:
-        delta = (end - begin) / 1e9
-        delta = int(delta)
-        limit = config["TIME_LIMIT"]
-        limit -= delta
-        print("time limit", limit)
-        if limit <= 0:
-            raise RuntimeError("Time out")
-
-        config["TIME_LIMIT"] = limit
+    if config["GLOBAL_TIME_LIMIT"] == -1:
+        stat = model.run()
+    else:
+        stat, remaining_time = run_with_global_time_limit(model, config["GLOBAL_TIME_LIMIT"])
+        config["GLOBAL_TIME_LIMIT"] = remaining_time
     return stat
+
+
+def run_with_global_time_limit(model, time_limit):
+    model.set_time_limit(time_limit)
+    timer = Timer()
+    
+    stat = model.run()
+
+    elapsed = timer.get_elapsed_time()
+
+    remaining = time_limit - elapsed
+    if remaining <= 0:
+        print("Reached global time limit: stop now!")
+        remaining = 0
+    return stat, remaining
+
+
+
+
+class Timer:
+    def __init__(self):
+        self.begin = time.time_ns()
+
+    def get_elapsed_time(self):
+        now = time.time_ns()
+        elapsed = (now - self.begin) / 1e9
+        self.begin = now
+        return elapsed
+
 
 
 def init_kernel(model, config, kernel_builder, kernel_sort, mps_file):
@@ -166,6 +187,15 @@ def ill_kernel(base_kernel):
     return kernel_size == model_size
 
 
+def check_time_out(instance: KernelSearchInstance):
+    config = instance.config
+    if config["TIME_LIMIT"] == -1:
+        output = config["GLOBAL_TIME_LIMIT"] == 0
+    else:
+        output = False
+
+    return output
+
 def print_kernel_size(kernel):
     count = sum(1 if k else 0 for k in kernel.values())
     print(f"{count}/{len(kernel)}")
@@ -196,6 +226,9 @@ def solve_buckets(instance, iteration):
             )
             if not allow_kernel_growth:
                 unselect_vars(instance.kernel, buck)
+
+        if check_time_out(instance):
+            break
 
     return instance.current_solution, local_best
 
@@ -331,6 +364,10 @@ def kernel_search(mps_file, config, kernel_methods):
 
         if config.get("DISTILL") and curr_sol is not None:
             distill_kernel(base_kernel, curr_sol)
+
+        
+        if check_time_out(instance):
+            break
 
     if best_sol:
         best_sol.set_debug_info(logger)

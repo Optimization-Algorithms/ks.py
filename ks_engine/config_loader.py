@@ -6,6 +6,7 @@ from yaml import safe_load
 
 
 DEFAULT_CONF = {
+    "GLOBAL_TIME_LIMIT": -1,
     "TIME_LIMIT": -1,
     "NUM_THREAD": -1,
     "MIP_GAP": 0.0,
@@ -32,6 +33,11 @@ def check_config(conf):
             raise ValueError(
                 f"Configuration Error: {k} should be an {type(v)} found {type(c)} instead"
             )
+
+    if conf["TIME_LIMIT"] > -1 and conf["GLOBAL_TIME_LIMIT"] > -1:
+        raise ValueError(
+            f"'TIME_LIMIT' and 'GLOBAL_TIME_LIMIT' cannot be set at the same time: only one of them is allowed in a given configuration"
+        )
 
 
 def load_config(file_name):
