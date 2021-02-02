@@ -61,6 +61,31 @@ def model_loarder(mps_file, config):
 
     return output
 
+def eval_model(mps_file, solution):
+    model = gurobipy.read(mps_file)
+    model.read(solution)
+    model.setParam('SolutionLimit', 1)
+    model.setParam('TimeLimit', 1)
+    model.optimize()
+
+    if model.NodeCount == 0 and model.SolCount == 1:
+        output = model.getObjective().getValue()
+    else: 
+        output = None
+    return output
+
+
+def model_has_solution(model):
+    obj = model.getObjective()
+    try:
+        obj.getValue()
+    except AttributeError:
+        output = False
+    else:
+        output = True
+    return output
+
+
 
 class Model:
     def __init__(self, model, config, linear_relax=False, one_solution=False):
@@ -94,15 +119,7 @@ class Model:
         self.model.optimize()
         stat = self.model.status
         self.stat = stat
-        obj = self.model.getObjective()
-        try:
-            obj.getValue()
-        except AttributeError:
-            output = False
-        else:
-            output = True
-
-        return output
+        return model_has_solution(self.model)
 
     def disable_variables(self, base_kernel, value=0):
         for name, _ in filter(lambda x: not x[1], base_kernel.items()):

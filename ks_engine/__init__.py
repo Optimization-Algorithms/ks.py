@@ -34,3 +34,4 @@ bucket_utils
 from .kernel_search import kernel_search, KernelMethods
 from .config_loader import load_config
 from .kernel_algorithms import *
+from .model import eval_model

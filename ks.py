@@ -9,14 +9,16 @@ from ks_engine import *
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument("mps", help="Instance MPS file")
-    parser.add_argument("-c", "--config", help="YAML Configuration File")
+
+    exclusive_group = parser.add_mutually_exclusive_group(required=True)
+
+    exclusive_group.add_argument("-e", "--eval", default=None, help="Evaluate if given solution file is feasible for the given instance")
+    exclusive_group.add_argument("-c", "--config", default=None, help="YAML Configuration File")
 
     return parser.parse_args()
 
-
-def main():
-    args = parse_args()
-    conf = load_config(args.config)
+def run_kernel_search(mps, config):
+    conf = load_config(config)
     bucket_gen = bucket_builders.get_algorithm(conf["BUCKET"])
     bucket_sort = bucket_sorters.get_algorithm(conf["BUCKET_SORTER"])
 
@@ -30,7 +32,7 @@ def main():
         kernel_sort=kernel_sort,
     )
     try:
-        sol = kernel_search(args.mps, conf, algo)
+        sol = kernel_search(mps, conf, algo)
     except ValueError as err:
         print(err)
     except RuntimeError as err:
@@ -45,6 +47,24 @@ def main():
 
             print("Solution:", sol.value)
             sol.debug.export_csv(conf["DEBUG"], False)
+    
+
+def evaluate_solution(mps, solution):
+    if sol := eval_model(mps, solution):
+        print(f"Solution file {solution} is a valid solution for {mps}")
+        print(f"Objective value: {sol}")
+    else:
+        print(f"Solution file {solution} is NOT a valid solution for {mps}")
+
+
+def main():
+    args = parse_args()
+    if args.config is not None:
+        run_kernel_search(args.mps, args.config)
+    else:
+        evaluate_solution(args.mps, args.eval)
+
+
 
 
 if __name__ == "__main__":
