@@ -25,10 +25,12 @@ class ConstrainManager:
             print("Using cache")
 
     def remove_constrains(self, main_model):
-        output = main_model.copy()
         if len(self.constraints):
             print("Run Relaxed model")
+        else:
+            return main_model
 
+        output = main_model.copy()
         constrs = output.getConstrs()
         self.constraint_count += 1
         rnd.shuffle(self.constraints)

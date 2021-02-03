@@ -342,6 +342,9 @@ def kernel_search(mps_file, config, kernel_methods):
             if not (config.get("PROBLEM-KICKSTART") and prev is None):
                 break
         else:
+            if not constr_manager.is_accetable_model():
+                best_sol = None
+                
             constr_manager.clean()
             if prev is None:
                 prev = curr_sol
