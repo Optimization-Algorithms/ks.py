@@ -343,8 +343,10 @@ def kernel_search(mps_file, config, kernel_methods):
                 break
         else:
             if not constr_manager.is_accetable_model():
+                if curr_sol is None:
+                    curr_sol = best_sol
                 best_sol = None
-                
+
             constr_manager.clean()
             if prev is None:
                 prev = curr_sol
