@@ -6,12 +6,16 @@ from numpy import random as rnd
 from .model import Model
 
 
-def enable_lazy_constraints(model, corrent_kernel, config, presolve=False, lazy_type=3):
+def enable_lazy_constraints(model, current_kernel, config, presolve=False, lazy_type=3):
+
+    kernel_model = current_model(model, current_model, config)
     print("COMPUTE IIS")
-    model.computeIIS()
+    kernel_model.computeIIS()
     print("DONE")
     for constr in model.getConstrs():
-        if constr.getAttr("IISConstr"):
+        name = constr.getAttr('ConstrName')
+        kernel_constr = kernel_model.getConstrByName(name)
+        if kernel_constr.getAttr("IISConstr"):
             constr.lazy = lazy_type
         else:
             constr.lazy = 0
@@ -21,6 +25,14 @@ def enable_lazy_constraints(model, corrent_kernel, config, presolve=False, lazy_
         model.setAttr("Presolve", 2)
         model = model.presolve()
         model.setAttr("Presolve", -1)
+    return model
+
+
+def current_model(model, current_kernel, config):
+    model = Model(model, config)
+    model.disable_variables(current_kernel)
+    model = model.model
+    model.update()
     return model
 
 
