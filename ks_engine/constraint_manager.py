@@ -6,8 +6,10 @@ from numpy import random as rnd
 from .model import Model
 
 
-def enable_lazy_constraints(model, presolve=False, lazy_type=3):
+def enable_lazy_constraints(model, corrent_kernel, config, presolve=False, lazy_type=3):
+    print("COMPUTE IIS")
     model.computeIIS()
+    print("DONE")
     for constr in model.getConstrs():
         if constr.getAttr("IISConstr"):
             constr.lazy = lazy_type
