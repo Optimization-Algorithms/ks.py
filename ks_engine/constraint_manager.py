@@ -8,7 +8,7 @@ from .model import Model
 
 def enable_lazy_constraints(model, current_kernel, config, presolve=False, lazy_type=3):
 
-    kernel_model = current_model(model, current_model, config)
+    kernel_model = get_kernel_model(model, current_kernel, config)
     print("COMPUTE IIS")
     kernel_model.computeIIS()
     print("DONE")
@@ -22,13 +22,13 @@ def enable_lazy_constraints(model, current_kernel, config, presolve=False, lazy_
 
     model.update()
     if presolve:
-        model.setAttr("Presolve", 2)
+        model.setParam("Presolve", 2)
         model = model.presolve()
-        model.setAttr("Presolve", -1)
+        model.setParam("Presolve", -1)
     return model
 
 
-def current_model(model, current_kernel, config):
+def get_kernel_model(model, current_kernel, config):
     model = Model(model, config)
     model.disable_variables(current_kernel)
     model = model.model

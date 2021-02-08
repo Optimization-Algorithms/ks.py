@@ -323,7 +323,7 @@ def kernel_search(mps_file, config, kernel_methods):
 
     if curr_sol is None and config.get("PROBLEM-KICKSTART"):
         print("SET LAZY CONSTRAINTS")
-        main_model = enable_lazy_constraints(main_model, config.get("PRESOLVE"))
+        main_model = enable_lazy_constraints(main_model, base_kernel, config, config.get("PRESOLVE"))
 
     for i in range(iters):
         print("Iteration:", i)
