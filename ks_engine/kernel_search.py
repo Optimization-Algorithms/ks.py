@@ -322,7 +322,7 @@ def kernel_search(mps_file, config, kernel_methods):
     
 
     if curr_sol is None and config.get("PROBLEM-KICKSTART"):
-        main_model = enable_lazy_constraints(main_model)
+        main_model = enable_lazy_constraints(main_model, config.get("PRESOLVE"))
 
     for i in range(iters):
         print("Iteration:", i)
@@ -341,10 +341,8 @@ def kernel_search(mps_file, config, kernel_methods):
         best_sol = get_best_solution(curr_best, best_sol, main_model)
         print(f"{best_sol=} {curr_sol=} {prev=}")
         if curr_sol is None:
-            if not (config.get("PROBLEM-KICKSTART") and prev is None):
-                break
+            break
         else:
-
             if prev is None:
                 prev = curr_sol
                 instance.worsen_score.increase_total()
