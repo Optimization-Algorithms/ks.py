@@ -325,6 +325,7 @@ def kernel_search(mps_file, config, kernel_methods):
         constr_manager.find_violated_constraint(main_model, config, base_kernel)
 
     for i in range(iters):
+        print("Iteration:", i)
         tmp_model = constr_manager.remove_constrains(main_model)
         instance = KernelSearchInstance(
             tmp_model,
@@ -338,6 +339,7 @@ def kernel_search(mps_file, config, kernel_methods):
         )
         curr_sol, curr_best = solve_buckets(instance, i)
         best_sol = get_best_solution(curr_best, best_sol, main_model)
+        print(f"{best_sol=} {curr_sol=} {prev=}")
         if curr_sol is None:
             if not (config.get("PROBLEM-KICKSTART") and prev is None):
                 break
@@ -374,10 +376,11 @@ def kernel_search(mps_file, config, kernel_methods):
         if check_time_out(instance):
             break
 
-    if best_sol:
-        best_sol.set_debug_info(logger)
 
     if not constr_manager.is_accetable_model():
         best_sol = None
+
+    if best_sol:
+        best_sol.set_debug_info(logger)
 
     return best_sol
