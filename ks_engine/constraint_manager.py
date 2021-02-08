@@ -6,6 +6,22 @@ from numpy import random as rnd
 from .model import Model
 
 
+def enable_lazy_constraints(model, presolve=False, lazy_type=3):
+    model.computeIIS()
+    for constr in model.getConstrs():
+        if constr.getAttr("IISConstr"):
+            constr.lazy = lazy_type
+        else:
+            constr.lazy = 0
+
+    model.update()
+    if presolve:
+        model.setAttr("Presolve", 2)
+        model = model.presolve()
+        model.setAttr("Presolve", -1)
+    return model
+
+
 class ConstrainManager:
     def __init__(self):
         self.constraints = []

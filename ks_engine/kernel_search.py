@@ -9,7 +9,7 @@ from .model import Model, model_loarder
 from .solution import DebugIndex, DebugInfo
 from .worsen_score import WorsenScore, MockWorsenScore
 from .feature_kernel import init_feature_kernel
-from .constraint_manager import ConstrainManager
+from .constraint_manager import enable_lazy_constraints
 
 
 KernelMethods = namedtuple(
@@ -44,7 +44,9 @@ def run_solution(model, config):
     if config["GLOBAL_TIME_LIMIT"] == -1:
         stat = model.run()
     else:
-        stat, remaining_time = run_with_global_time_limit(model, config["GLOBAL_TIME_LIMIT"])
+        stat, remaining_time = run_with_global_time_limit(
+            model, config["GLOBAL_TIME_LIMIT"]
+        )
         config["GLOBAL_TIME_LIMIT"] = remaining_time
     return stat
 
@@ -52,7 +54,7 @@ def run_solution(model, config):
 def run_with_global_time_limit(model, time_limit):
     model.set_time_limit(time_limit)
     timer = Timer()
-    
+
     stat = model.run()
 
     elapsed = timer.get_elapsed_time()
@@ -64,8 +66,6 @@ def run_with_global_time_limit(model, time_limit):
     return stat, remaining
 
 
-
-
 class Timer:
     def __init__(self):
         self.begin = time.time_ns()
@@ -75,7 +75,6 @@ class Timer:
         elapsed = (now - self.begin) / 1e9
         self.begin = now
         return elapsed
-
 
 
 def init_kernel(model, config, kernel_builder, kernel_sort, mps_file):
@@ -195,6 +194,7 @@ def check_time_out(instance: KernelSearchInstance):
         output = False
 
     return output
+
 
 def print_kernel_size(kernel):
     count = sum(1 if k else 0 for k in kernel.values())
@@ -319,14 +319,14 @@ def kernel_search(mps_file, config, kernel_methods):
     best_sol = curr_sol
     prev = curr_sol
 
-    constr_manager = ConstrainManager()
+    
 
     if curr_sol is None and config.get("PROBLEM-KICKSTART"):
-        constr_manager.find_violated_constraint(main_model, config, base_kernel)
+        main_model = enable_lazy_constraints(main_model)
 
     for i in range(iters):
         print("Iteration:", i)
-        tmp_model = constr_manager.remove_constrains(main_model)
+        tmp_model = main_model.copy()
         instance = KernelSearchInstance(
             tmp_model,
             kernel_methods,
@@ -344,12 +344,7 @@ def kernel_search(mps_file, config, kernel_methods):
             if not (config.get("PROBLEM-KICKSTART") and prev is None):
                 break
         else:
-            if not constr_manager.is_accetable_model():
-                if curr_sol is None:
-                    curr_sol = best_sol
-                best_sol = None
 
-            constr_manager.clean()
             if prev is None:
                 prev = curr_sol
                 instance.worsen_score.increase_total()
@@ -372,13 +367,8 @@ def kernel_search(mps_file, config, kernel_methods):
         if config.get("DISTILL") and curr_sol is not None:
             distill_kernel(base_kernel, curr_sol)
 
-        
         if check_time_out(instance):
             break
-
-
-    if not constr_manager.is_accetable_model():
-        best_sol = None
 
     if best_sol:
         best_sol.set_debug_info(logger)

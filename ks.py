@@ -12,10 +12,18 @@ def parse_args():
 
     exclusive_group = parser.add_mutually_exclusive_group(required=True)
 
-    exclusive_group.add_argument("-e", "--eval", default=None, help="Evaluate if given solution file is feasible for the given instance")
-    exclusive_group.add_argument("-c", "--config", default=None, help="YAML Configuration File")
+    exclusive_group.add_argument(
+        "-e",
+        "--eval",
+        default=None,
+        help="Evaluate if given solution file is feasible for the given instance",
+    )
+    exclusive_group.add_argument(
+        "-c", "--config", default=None, help="YAML Configuration File"
+    )
 
     return parser.parse_args()
+
 
 def run_kernel_search(mps, config):
     conf = load_config(config)
@@ -47,7 +55,7 @@ def run_kernel_search(mps, config):
 
             print("Solution:", sol.value)
             sol.debug.export_csv(conf["DEBUG"], False)
-    
+
 
 def evaluate_solution(mps, solution):
     if sol := eval_model(mps, solution):
@@ -63,8 +71,6 @@ def main():
         run_kernel_search(args.mps, args.config)
     else:
         evaluate_solution(args.mps, args.eval)
-
-
 
 
 if __name__ == "__main__":

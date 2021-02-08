@@ -61,16 +61,17 @@ def model_loarder(mps_file, config):
 
     return output
 
+
 def eval_model(mps_file, solution):
     model = gurobipy.read(mps_file)
     model.read(solution)
-    model.setParam('SolutionLimit', 1)
-    model.setParam('TimeLimit', 1)
+    model.setParam("SolutionLimit", 1)
+    model.setParam("TimeLimit", 1)
     model.optimize()
 
     if model.NodeCount == 0 and model.SolCount == 1:
         output = model.getObjective().getValue()
-    else: 
+    else:
         output = None
     return output
 
@@ -84,7 +85,6 @@ def model_has_solution(model):
     else:
         output = True
     return output
-
 
 
 class Model:
