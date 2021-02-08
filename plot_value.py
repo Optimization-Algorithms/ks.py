@@ -30,6 +30,7 @@ def parse_args():
 def main():
     args = parse_args()
     values = get_values(args.file)
+    print("Result:", min(values))
     plot_values(values, args.log_scale)
     if args.output_file:
         plt.savefig(args.output_file)
