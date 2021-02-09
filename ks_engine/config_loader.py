@@ -23,6 +23,7 @@ DEFAULT_CONF = {
     "BUCKET_SORTER_CONF": {},
     "ITERATIONS": 1,
     "PRESOLVE": False,
+    "VARIABLE_RANKING": False
 }
 
 
