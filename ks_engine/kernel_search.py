@@ -10,6 +10,7 @@ from .solution import DebugIndex, DebugInfo
 from .worsen_score import WorsenScore, MockWorsenScore
 from .feature_kernel import init_feature_kernel
 from .constraint_manager import enable_lazy_constraints
+from .variable_scoring import variable_score_factory
 
 
 KernelMethods = namedtuple(
@@ -169,15 +170,17 @@ def initialize(model, conf, methods, mps_file):
     if ill_kernel(base_kernel):
         raise ValueError("Kernel is large as the whole model")
 
+    var_score = variable_score_factory(values, base_kernel, conf)
+
     buckets = methods.bucket_builder(
         base_kernel,
-        values,
+        var_score,
         methods.bucket_sort,
         conf["BUCKET_SORTER_CONF"],
         **conf["BUCKET_CONF"],
     )
 
-    return curr_sol, base_kernel, buckets
+    return curr_sol, base_kernel, buckets, var_score
 
 
 def ill_kernel(base_kernel):
@@ -304,7 +307,7 @@ def kernel_search(mps_file, config, kernel_methods):
 
     main_model = model_loarder(mps_file, config)
 
-    curr_sol, base_kernel, buckets = initialize(
+    curr_sol, base_kernel, buckets, var_score = initialize(
         main_model, config, kernel_methods, mps_file
     )
     buckets = list(buckets)
@@ -319,11 +322,11 @@ def kernel_search(mps_file, config, kernel_methods):
     best_sol = curr_sol
     prev = curr_sol
 
-    
-
     if curr_sol is None and config.get("PROBLEM-KICKSTART"):
         print("SET LAZY CONSTRAINTS")
-        main_model = enable_lazy_constraints(main_model, base_kernel, config, config.get("PRESOLVE"))
+        main_model = enable_lazy_constraints(
+            main_model, base_kernel, config, config.get("PRESOLVE")
+        )
 
     for i in range(iters):
         print("Iteration:", i)
@@ -357,17 +360,15 @@ def kernel_search(mps_file, config, kernel_methods):
 
         if config.get("DISTILL") and curr_sol is not None:
             distill_kernel(base_kernel, curr_sol)
-            
+
         if curr_sol:
             buckets = kernel_methods.bucket_builder(
                 base_kernel,
-                curr_sol,
+                var_score,
                 kernel_methods.bucket_sort,
                 config["BUCKET_SORTER_CONF"],
                 **config["BUCKET_CONF"],
             )
-
-
 
         if check_time_out(instance):
             break

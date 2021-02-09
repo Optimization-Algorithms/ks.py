@@ -13,7 +13,7 @@ def enable_lazy_constraints(model, current_kernel, config, presolve=False, lazy_
     kernel_model.computeIIS()
     print("DONE")
     for constr in model.getConstrs():
-        name = constr.getAttr('ConstrName')
+        name = constr.getAttr("ConstrName")
         kernel_constr = kernel_model.getConstrByName(name)
         if kernel_constr.getAttr("IISConstr"):
             constr.lazy = lazy_type
