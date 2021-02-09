@@ -354,6 +354,10 @@ def kernel_search(mps_file, config, kernel_methods):
                 instance.worsen_score.increase_total()
 
         prev = curr_sol
+
+        if config.get("DISTILL") and curr_sol is not None:
+            distill_kernel(base_kernel, curr_sol)
+            
         if curr_sol:
             buckets = kernel_methods.bucket_builder(
                 base_kernel,
@@ -363,8 +367,7 @@ def kernel_search(mps_file, config, kernel_methods):
                 **config["BUCKET_CONF"],
             )
 
-        if config.get("DISTILL") and curr_sol is not None:
-            distill_kernel(base_kernel, curr_sol)
+
 
         if check_time_out(instance):
             break
