@@ -372,13 +372,17 @@ def kernel_search(mps_file, config, kernel_methods):
             distill_kernel(base_kernel, curr_sol)
 
         if curr_sol:
-            buckets = kernel_methods.bucket_builder(
-                base_kernel,
-                var_score,
-                kernel_methods.bucket_sort,
-                config["BUCKET_SORTER_CONF"],
-                **config["BUCKET_CONF"],
-            )
+            try:
+                buckets = kernel_methods.bucket_builder(
+                    base_kernel,
+                    var_score,
+                    kernel_methods.bucket_sort,
+                    config["BUCKET_SORTER_CONF"],
+                    **config["BUCKET_CONF"],
+                )
+            except ValueError(err):
+                print(err)
+                break
 
         if check_time_out(instance):
             break
