@@ -23,4 +23,4 @@ class ReducedCostScoring(AbstactVariableScoring):
 
 
 class VariableRanking(AbstactVariableScoring):
-    raise NotImplementedError
+    pass
