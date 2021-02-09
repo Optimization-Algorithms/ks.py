@@ -1,6 +1,6 @@
 iterations: 7
 bucket_count: 20
-time_limit: 30
+global_time_limit: 1800 
 base_name: probportfolio
 parameters:
   - - WORST-SOL
