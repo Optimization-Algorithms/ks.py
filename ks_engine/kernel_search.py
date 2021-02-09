@@ -4,6 +4,7 @@
 from collections import namedtuple
 import time
 from numpy import random
+import numpy as np
 
 from .model import Model, model_loarder
 from .solution import DebugIndex, DebugInfo
@@ -30,7 +31,8 @@ class KernelSearchInstance:
         logger,
         config,
         worsen_score,
-        callback
+        callback,
+        var_score,
     ):
         self.preload_model = preload_model
         self.kernel_methods = kernel_methods
@@ -41,6 +43,7 @@ class KernelSearchInstance:
         self.config = config
         self.worsen_score = worsen_score
         self.callback = callback
+        self.var_score = var_score
 
 
 def run_solution(model, config):
@@ -221,16 +224,17 @@ def solve_buckets(instance, iteration):
             )
             if instance.config.get("REMOVE-UNSET"):
                 update_kernel(instance.kernel, buck, instance.current_solution, 0)
+            instance.var_score.success_update_score(instance.kernel, buck)
         else:
             print("No sol")
-            # if instance.current_solution:
-            #    instance.worsen_score.increase_score()
             allow_kernel_growth = (
                 instance.current_solution is None
                 and instance.config.get("KERNEL-GROWTH")
             )
             if not allow_kernel_growth:
                 unselect_vars(instance.kernel, buck)
+            instance.var_score.failure_update_score(instance.kernel, buck)
+
 
         if check_time_out(instance):
             break
@@ -344,7 +348,8 @@ def kernel_search(mps_file, config, kernel_methods):
             logger,
             config,
             worst_sol,
-            callback
+            callback,
+            var_score
         )
         curr_sol, curr_best = solve_buckets(instance, i)
         best_sol = get_best_solution(curr_best, best_sol, main_model)
