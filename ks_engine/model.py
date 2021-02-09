@@ -88,13 +88,15 @@ def model_has_solution(model):
 
 
 class Model:
-    def __init__(self, model, config, linear_relax=False, one_solution=False):
+    def __init__(self, model, config, linear_relax=False, one_solution=False, callback=None):
 
         self.preload = config["PRELOAD"]
         self.sol_file = get_solution_file_name(config.get("SOLUTION_FILE"))
         self.model = model.copy()
         if one_solution:
             self.model.setParam("SolutionLimit", 1)
+
+        self.callback = callback
 
         self.relax = linear_relax
         self.stat = None
@@ -116,7 +118,11 @@ class Model:
         self.model.setParam("TimeLimit", time_limit)
 
     def run(self):
-        self.model.optimize()
+        if self.callback:
+            self.model.optimize(self.callback)
+        else:
+            self.model.optimize()
+            
         stat = self.model.status
         self.stat = stat
         return model_has_solution(self.model)

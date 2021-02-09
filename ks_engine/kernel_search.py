@@ -10,7 +10,7 @@ from .solution import DebugIndex, DebugInfo
 from .worsen_score import WorsenScore, MockWorsenScore
 from .feature_kernel import init_feature_kernel
 from .constraint_manager import enable_lazy_constraints
-from .variable_scoring import variable_score_factory
+from .variable_scoring import variable_score_factory, callback_factory
 
 
 KernelMethods = namedtuple(
@@ -30,6 +30,7 @@ class KernelSearchInstance:
         logger,
         config,
         worsen_score,
+        callback
     ):
         self.preload_model = preload_model
         self.kernel_methods = kernel_methods
@@ -39,6 +40,7 @@ class KernelSearchInstance:
         self.logger = logger
         self.config = config
         self.worsen_score = worsen_score
+        self.callback = callback
 
 
 def run_solution(model, config):
@@ -133,7 +135,7 @@ def run_extension(
     bucket_index,
     iteration_index,
 ):
-    model = Model(instance.preload_model, instance.config)
+    model = Model(instance.preload_model, instance.config, callback=instance.callback)
     model.disable_variables(instance.kernel)
     prob = instance.worsen_score.get_probability()
     cutoff = random.random() >= prob
@@ -328,6 +330,8 @@ def kernel_search(mps_file, config, kernel_methods):
             main_model, base_kernel, config, config.get("PRESOLVE")
         )
 
+    callback = callback_factory(var_score)
+
     for i in range(iters):
         print("Iteration:", i)
         tmp_model = main_model.copy()
@@ -340,6 +344,7 @@ def kernel_search(mps_file, config, kernel_methods):
             logger,
             config,
             worst_sol,
+            callback
         )
         curr_sol, curr_best = solve_buckets(instance, i)
         best_sol = get_best_solution(curr_best, best_sol, main_model)

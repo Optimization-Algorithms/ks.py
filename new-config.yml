@@ -1,10 +1,10 @@
 PRELOAD: on
-LOG: on
+LOG: off
 BUCKET: 'fixed'
 BUCKET_CONF:
-  count: 35
-ITERATIONS: 5
-TIME_LIMIT: 20
+  count: 20
+ITERATIONS: 3
+TIME_LIMIT: 10
 
 DEBUG: '30n20b8-run.csv'
 SOLUTION_FILE: '30n20b8-sol.sol'
@@ -15,3 +15,4 @@ KERNEL-GROWTH: true
 REMOVE-UNSET: true
 PROBLEM-KICKSTART: false
 DISTILL: true
+VARIABLE_RANKING: true

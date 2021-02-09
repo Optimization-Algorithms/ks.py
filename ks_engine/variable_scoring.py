@@ -2,6 +2,11 @@
 
 from .solution import Solution
 
+try: 
+    import gurobipy
+except ImportError:
+    print("Gurobi not found: error ignored to allow tests")
+
 def variable_score_factory(sol: Solution, base_kernel: dict, config: dict):
     if config.get('VARIABLE_RANKING'):
         output = VariableRanking(sol, base_kernel)
@@ -9,6 +14,8 @@ def variable_score_factory(sol: Solution, base_kernel: dict, config: dict):
         output = ReducedCostScoring(sol, base_kernel)
 
     return output
+
+
 
 class AbstactVariableScoring:
     def __init__(self, solution: Solution, base_kernel: dict):
@@ -23,4 +30,27 @@ class ReducedCostScoring(AbstactVariableScoring):
 
 
 class VariableRanking(AbstactVariableScoring):
-    pass
+    def update_score(self, name, value):
+        if value == 0:
+            self.score[name] += 1
+        else:
+            self.score[name] -= 1
+
+
+def callback_factory(scoring: AbstactVariableScoring):
+    if isinstance(scoring, VariableRanking):
+        output = __build_callback__(scoring)
+    else:
+        output = None
+
+    return output
+
+
+def __build_callback__(scoring):
+    def callback(model, where):
+        if where == gurobipy.GRB.Callback.MIPSOL:
+            for var in model.getVars():
+                value = model.cbGetSolution(var)
+                scoring.update_score(var.varName, value)
+
+    return callback
