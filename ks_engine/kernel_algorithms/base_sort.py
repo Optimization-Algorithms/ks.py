@@ -10,6 +10,14 @@ import numpy as np
 
 
 def cheb_nodes(count: int):
+    """
+    Create a list of Chebyshev nodes
+
+    :param count: the number of nodes
+    :type count: int
+    :return: the list of Chebyshev nodes
+    :rtype: numpy.ndarray
+    """
     output = [0] * count
     for i, n in enumerate(range(1, count + 1)):
         tmp = (((2 * n) - 1) / (2 * count)) * np.pi
@@ -21,48 +29,74 @@ def cheb_nodes(count: int):
 
 
 def kernel_sort(kernel: dict, values):
+    """
+    Sort the elements of the kernel passed in in ascending order.
+
+    :param kernel: the kernel of the problem
+    :type kernel: dict
+    :param values: the values of variable in the kernel
+    :return: The variables sorted occording to their values
+    :rtype: list
+    """
     tmp = [k for k, v in kernel.items() if v]
     tmp.sort(key=lambda x: values.get_value(x))
     return tmp
 
 
 def bucket_sort(kernel: dict, values):
+    """
+    Sort the elements of the kernel passed in descending order.
+
+    :param kernel: the kernel of the problem
+    :type kernel: dict
+    :param values: the values of variable in the kernel
+    :return: The variables sorted occording to their values
+    :rtype: list
+    """
     tmp = [k for k, v in kernel.items() if not v]
     tmp.sort(key=lambda x: -values.get_value(x))
     return tmp
 
 
 def cheb_sort(kernel: dict, values):
+    """
+    Sort the elements of the kernel passed using Chebyshev nodes for ordering.
+
+    :param kernel: the kernel of the problem
+    :type kernel: dict
+    :param values: the values of variable in the kernel
+    :return: The variables sorted occording to their values
+    :rtype: list
+    """
     tmp = [k for k, v in kernel.items() if not v]
     tmp.sort(key=lambda x: -values.get_value(x))
     tmp = np.array(tmp)
-    head, tail = np.array_split(tmp, 2) 
-    nodes = cheb_nodes(len(tmp)) 
+    head, tail = np.array_split(tmp, 2)
+    nodes = cheb_nodes(len(tmp))
     head_nodes, tail_nodes = np.array_split(nodes, 2)
     output = []
     j, k = 0, 0
-    
+
     for _ in range(len(tmp)):
         done_tail = k >= len(tail_nodes)
         done_head = j >= len(head_nodes)
         if done_tail:
-            flag = True 
+            flag = True
         elif done_head:
-            flag = False  
+            flag = False
         else:
             if head_nodes[j] < tail_nodes[k]:
                 flag = False
             else:
                 flag = True
-            
+
         if flag:
             output.append(head[j])
             j += 1
         else:
             output.append(tail[k])
             k += 1
-        
-        
+
     return output
 
 

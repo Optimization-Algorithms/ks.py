@@ -1,4 +1,4 @@
-ks\_engine.kernel\_algorithms.base\_kernel module
+base\_kernel module
 -------------------------------------------------
 
 .. automodule:: ks_engine.kernel_algorithms.base_kernel

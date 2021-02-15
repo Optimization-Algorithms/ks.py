@@ -13,7 +13,19 @@ KernelMethods = namedtuple(
 )
 
 
-def run_solution(model, config):
+def run_solution(model: Model, config):
+    """
+    Solve the passed model respecting the time limit declared
+    in the configuration.
+
+    :param model: the model to solve.
+    :type model: Model
+    :param config: a configuration to use in the resolution.
+    :type config: dict
+    :raises RuntimeError: if the solution have timed out.
+    :return: True if the solution is optimal, else False.
+    :rtype: bool
+    """
     begin = time.time_ns()
     stat = model.run()
     end = time.time_ns()
@@ -31,6 +43,23 @@ def run_solution(model, config):
 
 
 def init_kernel(model, config, kernel_builder, kernel_sort, mps_file):
+    """
+    Initialize a kernel set from the model using a particular configuration.
+
+    :param model: the model to solve.
+    :param config: a configuration to use in the resolution.
+    :type config: dict
+    :param kernel_builder: the kernel builder method to use.
+    :type kernel_builder: Callable
+    :param kernel_sort: the kernel sorter method to use.
+    :type kernel_sort: Callable
+    :param mps_file: the name of the file containing the problem.
+    :type mps_file: str
+    :raises ValueError: if the relaxed problem has no solution.
+    :return: the solution value, the initial kernel set and a
+        :class:`~ks_engine.solution.Solution`.
+    :rtype: tuple
+    """
     lp_model = Model(model, config, True)
     stat = run_solution(lp_model, config)
 
@@ -48,7 +77,7 @@ def init_kernel(model, config, kernel_builder, kernel_sort, mps_file):
     int_model = Model(model, config, False)
     if config.get("PRELOAD_FILE"):
         int_model.preload_from_file()
-        
+
     int_model.preload_solution(tmp_sol)
     int_model.disable_variables(kernel)
     stat = run_solution(int_model, config)
@@ -61,11 +90,30 @@ def init_kernel(model, config, kernel_builder, kernel_sort, mps_file):
 
 
 def select_vars(base_kernel, bucket):
+    """
+    Activate all variables inside the bucket,
+    so that will be used in the resolution.
+
+    :param base_kernel: a var-isPresentInKernel pair representing
+        the kernel set.
+    :type base_kernel: dict
+    :param bucket: a list of variable, i.e. a bucket.
+    """
     for var in bucket:
         base_kernel[var] = True
 
 
 def update_kernel(base_kernel, bucket, solution, null):
+    """
+    Remove all null variables inside the bucket from the kernel set.
+
+    :param base_kernel: a var-isPresentInKernel pair representing
+        the kernel set.
+    :type base_kernel: dict
+    :param bucket: a list of variable, i.e. a bucket.
+    :param solution: the current solution.
+    :param null: a value to consider as the null value, i.e. not assigned.
+    """
     for var in bucket:
         if solution.get_value(var) == null:
             base_kernel[var] = False
@@ -74,6 +122,24 @@ def update_kernel(base_kernel, bucket, solution, null):
 def run_extension(
     model, config, kernel, bucket, solution, bucket_index, iteration_index
 ):
+    """
+    Insert new variables into the kernel set and compute a new solution
+    from this one.
+
+    :param model: the model to solve.
+    :param config: a configuration to use in the resolution.
+    :type config: dict
+    :param kernel: a var-isPresentInKernel pair representing
+        the kernel set.
+    :type kernel: dict
+    :param bucket: a list of variable, i.e. a bucket.
+    :param solution: the current solution.
+    :param bucket_index: the index of the bucket in the bucket list.
+    :type bucket_index: int
+    :param iteration_index: the cardinal number of the iteration.
+    :type iteration_index: int
+    :return: a new solution computed using the new kernel set.
+    """
     model = Model(model, config)
     model.disable_variables(kernel)
     model.add_bucket_contraints(solution, bucket)
@@ -93,6 +159,25 @@ def run_extension(
 
 
 def initialize(model, conf, methods, mps_file):
+    """
+    Compute an initial kernel set with its attached bucket.
+
+    :param model: the model to solve.
+    :param conf: a configuration to use in the resolution.
+    :type conf: dict
+    :param methods: The collection of four methods:
+
+        * Kernel Builder.
+        * Kernel Sorter.
+        * Bucket Builder.
+        * Bucket Sorter.
+    :type methods: namedtuple
+    :param mps_file: the name of the file containing the problem.
+    :type mps_file: str
+    :raises ValueError: if the kernel size raise to the model size.
+    :return: the current solution, the kernel set, the list of buckets.
+    :rtype: tuple
+    """
     if conf.get("FEATURE_KERNEL"):
         curr_sol, base_kernel, values = init_feature_kernel(model, conf)
     else:
@@ -103,7 +188,6 @@ def initialize(model, conf, methods, mps_file):
     if ill_kernel(base_kernel):
         raise ValueError("Kernel is large as the whole model")
 
-
     buckets = methods.bucket_builder(
         base_kernel,
         values,
@@ -113,14 +197,40 @@ def initialize(model, conf, methods, mps_file):
     )
     return curr_sol, base_kernel, buckets
 
+
 def ill_kernel(base_kernel):
+    """
+    Detect if the kernel is ill or not.
+
+    An ill kernel is a kernel that is as large as the model, i.e. is the model.
+
+    :param base_kernel: a var-isPresentInKernel pair representing
+        the kernel set.
+    :type base_kernel: dict
+    :return: True if the kernel reached the length of the model, else False.
+    :rtype: bool
+    """
     kernel_size = sum(1 for v in base_kernel.values() if v)
     model_size = len(base_kernel)
     return kernel_size == model_size
 
 
 def solve_buckets(model, config, curr_sol, base_kernel, buckets, iteration):
-    
+    """
+    Pass and solve over all buckets updating the kernel.
+
+    :param model: the model to solve.
+    :param config: a configuration to use in the resolution.
+    :type config: dict
+    :param curr_sol: the current solution that is present before the iteration.
+    :param base_kernel: a var-isPresentInKernel pair representing
+        the kernel set.
+    :type base_kernel: dict
+    :param buckets: the list of bucket over which iteration happen.
+    :param iteration: the number of the iteration.
+    :type iteration: int
+    :return: the solution found after iterate over all buckets.
+    """
     for index, buck in enumerate(buckets):
         print(index)
         select_vars(base_kernel, buck)
@@ -133,43 +243,27 @@ def solve_buckets(model, config, curr_sol, base_kernel, buckets, iteration):
     return curr_sol
 
 
-def kernel_search(mps_file, config, kernel_methods):
+def kernel_search(mps_file: str, config, kernel_methods):
     """
-    Run Kernel Search Heuristic
+    Run Kernel Search Heuristic.
 
-    Parameters
-    ----------
-    mps_file : str
-        The MIP problem instance file.
+    :param mps_file: The MIP problem instance file.
+    :type mps_file: str
+    :param config: Kernel Search configuration
+    :type config: dict
+    :param kernel_methods: The collection of four methods:
 
-    config : dict
-        Kernel Search configuration
-
-    kernel_methods: KernelMethods
-        The collection of four methods:
-            - Kernel Builder
-            - Kernel Sorter
-            - Bucket Builder
-            - Bucket Sorter
-
-    Raises
-    ------
-    ValueError
-        When the LP relaxation is unsolvable.
+        * Kernel Builder.
+        * Kernel Sorter.
+        * Bucket Builder.
+        * Bucket Sorter.
+    :type kernel_methods: namedtuple
+    :raises ValueError: When the LP relaxation is unsolvable.
         In this case no feasible solution
         are available
-
-    Returns
-    -------
-    Value : float
-        Objective function value
-
-    Variables: dict 
-        Map variable name into its value
-        in the solution
-
+    :return: Objective function value
+    :rtype: float
     """
-
     # init_feature_kernel(mps_file, config, None, None)
     # exit()
 

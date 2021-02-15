@@ -25,7 +25,14 @@ DEFAULT_CONF = {
 }
 
 
-def check_config(conf):
+def check_config(conf: dict):
+    """
+    Check the provided configuration file.
+
+    :param conf: A dictionary representing the configuration file.
+    :type conf: dict
+    :raises ValueError: If the type of every key in the dictionary is wrong.
+    """
     for k, v in DEFAULT_CONF.items():
         c = conf[k]
         if not (type(c) is type(v)):
@@ -34,28 +41,19 @@ def check_config(conf):
             )
 
 
-def load_config(file_name):
+def load_config(file_name: str):
     """
     Load the configuration from the given file.
 
-    Parameters
-    ----------
-    file_name : str
-        path to the YAML configuration file
-
-    Raises
-    ------
-    ValueError
-        if some variable in the given configuration 
-        does not  have the same type of the variables 
-        in the default configuration. Other variables 
+    :param file_name: path to the YAML configuration file.
+    :type file_name: str
+    :raises ValueError: if some variable in the given configuration
+        does not  have the same type of the variables
+        in the default configuration. Other variables
         are not checked.
-    
-    Returns
-    -------
-    config: dict
-        map configuration variable name into 
+    :return: map configuration variable name into
         their values
+    :rtype: dict
     """
     if not file_name:
         return DEFAULT_CONF

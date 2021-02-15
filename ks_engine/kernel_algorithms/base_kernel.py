@@ -7,10 +7,17 @@ import math
 
 
 def base_kernel_builder(base, values, sorter, sorter_conf):
+    """
+    .. todo:: Cannot understand the parameters
+    """
     return base
 
 
-def percentage_better_kernel_builder(base, value, sorter, sorter_conf, percentage):
+def percentage_better_kernel_builder(
+        base, value, sorter, sorter_conf, percentage):
+    """
+    .. todo:: Cannot understand the parameters
+    """
     kernel_vars = sorter(base, value, **sorter_conf)
     last_taken = math.floor(len(kernel_vars) * percentage)
     for name in kernel_vars[last_taken:]:

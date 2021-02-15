@@ -22,15 +22,20 @@ config_loader
 Available subpackages
 ---------------------
 kernel_utils
-    contains some basic initial kernel generators 
+    contains some basic initial kernel generators
     and a generator 'factory'
 
 bucket_utils
-    contains some basic bucket generators 
+    contains some basic bucket generators
     and a generator 'factory'
 
 """
 
 from .kernel_search import kernel_search, KernelMethods
 from .config_loader import load_config
-from .kernel_algorithms import *
+from .kernel_algorithms import *  # noqa
+
+
+__all__ = ['kernel_search',
+           'KernelMethods',
+           'load_config']
