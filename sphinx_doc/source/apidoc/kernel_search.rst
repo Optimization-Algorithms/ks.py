@@ -1,4 +1,4 @@
-ks\_engine.kernel\_search module
+kernel\_search module
 --------------------------------
 
 .. automodule:: ks_engine.kernel_search

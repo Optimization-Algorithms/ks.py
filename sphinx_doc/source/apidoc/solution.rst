@@ -1,4 +1,4 @@
-ks\_engine.solution module
+solution module
 --------------------------
 
 .. automodule:: ks_engine.solution

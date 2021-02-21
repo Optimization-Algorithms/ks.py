@@ -1,4 +1,4 @@
-ks\_engine.logger module
+logger module
 ------------------------
 
 .. automodule:: ks_engine.logger

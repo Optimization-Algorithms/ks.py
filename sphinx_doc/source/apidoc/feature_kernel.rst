@@ -1,4 +1,4 @@
-ks\_engine.feature\_kernel module
+feature\_kernel module
 ---------------------------------
 
 .. automodule:: ks_engine.feature_kernel

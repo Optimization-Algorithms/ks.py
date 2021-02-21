@@ -1,4 +1,4 @@
-ks\_engine.model module
+model module
 -----------------------
 
 .. automodule:: ks_engine.model

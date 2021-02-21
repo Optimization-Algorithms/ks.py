@@ -1,4 +1,4 @@
-ks\_engine.kernel\_algorithms package
+kernel\_algorithms package
 =====================================
 
 .. automodule:: ks_engine.kernel_algorithms

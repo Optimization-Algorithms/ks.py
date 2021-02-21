@@ -1,4 +1,4 @@
-ks\_engine.config\_loader module
+config\_loader module
 --------------------------------
 
 .. automodule:: ks_engine.config_loader

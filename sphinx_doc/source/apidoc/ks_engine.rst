@@ -10,12 +10,12 @@ ks\_engine package
 .. toctree::
    :maxdepth: 4
 
-   ks_engine.config_loader
-   ks_engine.feature_kernel
-   ks_engine.kernel_search
-   ks_engine.logger
-   ks_engine.model
-   ks_engine.solution
+   config_loader
+   feature_kernel
+   kernel_search
+   logger
+   model
+   solution
  
    kernel_algorithms/kernel_algorithms
 
