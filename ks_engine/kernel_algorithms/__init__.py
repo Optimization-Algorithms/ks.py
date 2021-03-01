@@ -8,3 +8,8 @@ from .algorithm_selection import (
     kernel_sorters,
     bucket_sorters,
 )
+
+__all__ = ['bucket_builders',
+           'kernel_builders',
+           'kernel_sorters',
+           'bucket_sorters']

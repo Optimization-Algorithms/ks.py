@@ -3,48 +3,36 @@
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
 from .base_bucket import BUCKET_BUILDERS, fixed_size_bucket
+from typing import Callable
 from .base_kernel import KERNEL_BUILDERS, base_kernel_builder
-from .base_sort import *
+from .base_sort import kernel_sort, bucket_sort, BUCKET_SORT, KERNEL_SORTERS
 
 
 class Selector:
-
     """
     Selector allows client code to safely choose between available
-    algorithms. 
+    algorithms.
+
+    :param base_store: a dictionary mapping string into functions
+    :type base_store: dict
+    :param default: the default function between the available ones
+    :type default: Callable
     """
-
-    def __init__(self, base_store, default):
-        """
-        Parameters
-        ----------
-        base_store: dict
-            a dictionary mapping string into functions
-
-        default: function
-            the default function between the available ones
-
-        """
+    def __init__(self, base_store: dict, default: Callable):
         self.store = base_store
         self.default = default
 
-    def add_algorithm(self, name, function):
+    def add_algorithm(self, name: str, function: Callable):
         """
         Insert a new algorithm in the store, if not present
-        
-        Parameters
-        ----------
-        name: str
-            new algorithm name, must be different from 
+
+        :param name: new algorithm name, must be different from
             the corrently available
-        function: callable
-            the algorithm implementation, although not required it
+        :type name: str
+        :param function: the algorithm implementation, although not required it
             must have the same signature of the order functions
-
-        Raises
-        ------
-            ValueError if name is already pointing to a function
-
+        :type function: Callable
+        :raises ValueError: if name is already pointing to a function
         """
         try:
             self.store[name]
@@ -53,19 +41,15 @@ class Selector:
         else:
             raise ValueError(f"algorithm {name} is already installed")
 
-    def get_algorithm(self, name):
+    def get_algorithm(self, name: str):
         """
         Return the algorithm pointed by given name
 
-        Parameters
-        ----------
-            name: str
-                desidered method name
-
-        Returns
-        -------
-            the function associated to the given name if 
-            it is available, None otherwise. 
+        :param name: desidered method name
+        :type name: str
+        :return: the function associated to the given name if
+            it is available, None otherwise.
+        :rtype: Callable
         """
         return self.store.get(name)
 
