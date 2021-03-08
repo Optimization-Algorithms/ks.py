@@ -4,10 +4,12 @@ BUCKET: 'fixed'
 BUCKET_CONF:
   count: 5
 BUCKET_SORTER: cheb_bucket_sort
-ITERATIONS: 1
+ITERATIONS: 10
 TIME_LIMIT: 10
 
-DEBUG: '30n20b8-run.csv'
+INSTANCE: instances/30n20b8.mps
+DEBUG: on
+SOLUTION_FILE: on
 MIP_GAP: 4.0
 PRESOLVE: true
 WORST-SOL: false
