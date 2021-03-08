@@ -2,12 +2,11 @@ PRELOAD: on
 LOG: off
 BUCKET: 'fixed'
 BUCKET_CONF:
-  count: 5
+  count: 10
 BUCKET_SORTER: cheb_bucket_sort
 ITERATIONS: 10
 TIME_LIMIT: 10
-
-INSTANCE: instances/30n20b8.mps
+INSTANCE: instances/dg012142.mps
 DEBUG: on
 SOLUTION_FILE: on
 MIP_GAP: 4.0
