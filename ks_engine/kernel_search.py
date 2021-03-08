@@ -350,7 +350,15 @@ def kernel_search(mps_file, config, kernel_methods):
             callback,
             var_score,
         )
-        curr_sol, curr_best = solve_buckets(instance, i)
+        try:
+            curr_sol, curr_best = solve_buckets(instance, i)
+        except ValueError as err:
+            print("Error:")
+            print(err)
+            print("Stop now")
+            break
+
+
         best_sol = get_best_solution(curr_best, best_sol, main_model)
         print(f"{best_sol=} {curr_sol=} {prev=}")
         if curr_sol is None:
@@ -370,18 +378,16 @@ def kernel_search(mps_file, config, kernel_methods):
         if config.get("DISTILL") and curr_sol is not None:
             distill_kernel(base_kernel, curr_sol)
 
+        
         if curr_sol:
-            try:
-                buckets = kernel_methods.bucket_builder(
-                    base_kernel,
-                    var_score,
-                    kernel_methods.bucket_sort,
-                    config["BUCKET_SORTER_CONF"],
-                    **config["BUCKET_CONF"],
-                )
-            except ValueError(err):
-                print(err)
-                break
+            buckets = kernel_methods.bucket_builder(
+                base_kernel,
+                var_score,
+                kernel_methods.bucket_sort,
+                config["BUCKET_SORTER_CONF"],
+                **config["BUCKET_CONF"],
+            )
+            
 
         if check_time_out(instance):
             break
