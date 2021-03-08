@@ -1,8 +1,90 @@
 #! /usr/bin/python
 
+import os
 import unittest
 
-from ks_engine.config_loader import check_config, DEFAULT_CONF
+
+from ks_engine.config_loader import (
+    check_config,
+    DEFAULT_CONF,
+    get_base_name,
+    check_file_parameters,
+)
+
+
+class TestCheckFileParametes(unittest.TestCase):
+    def test_correct_config_without_instance(self):
+        conf = {
+            "INSTANCE": "",
+            "DEBUG": "test-run.csv",
+            "SOLUTION_FILE": "test-sol.sol",
+        }
+
+        check_file_parameters(conf)
+        self.assertEqual(conf["INSTANCE"], "")
+        self.assertEqual(conf["DEBUG"], "test-run.csv")
+        self.assertEqual(conf["SOLUTION_FILE"], "test-sol.sol")
+
+    def test_correct_config_with_instance(self):
+        conf = {
+            "INSTANCE": "test",
+            "DEBUG": "test-run.csv",
+            "SOLUTION_FILE": "test-sol.sol",
+        }
+
+        check_file_parameters(conf)
+        self.assertEqual(conf["INSTANCE"], "test")
+        self.assertEqual(conf["DEBUG"], "test-run.csv")
+        self.assertEqual(conf["SOLUTION_FILE"], "test-sol.sol")
+
+    def test_correct_config_with_set_output(self):
+        conf = {"INSTANCE": "name.mps", "DEBUG": True, "SOLUTION_FILE": True}
+
+        check_file_parameters(conf)
+        self.assertEqual(conf["INSTANCE"], "name.mps")
+        self.assertEqual(conf["DEBUG"], "name-run.csv")
+        self.assertEqual(conf["SOLUTION_FILE"], "name-sol.sol")
+
+        conf = {"INSTANCE": "name.mps", "DEBUG": True, "SOLUTION_FILE": False}
+
+        check_file_parameters(conf)
+        self.assertEqual(conf["INSTANCE"], "name.mps")
+        self.assertEqual(conf["DEBUG"], "name-run.csv")
+        self.assertEqual(conf["SOLUTION_FILE"], None)
+
+    def test_wrong_config(self):
+        conf = {"INSTANCE": "", "DEBUG": False, "SOLUTION_FILE": True}
+
+        with self.assertRaisesRegex(
+            ValueError,
+            "cannot set solution file name without an instance name in config file",
+        ):
+            check_file_parameters(conf)
+
+    def test_wrong_parameter_type(self):
+        conf = {"INSTANCE": "", "DEBUG": "test-run.csv", "SOLUTION_FILE": 56}
+
+        with self.assertRaisesRegex(
+            ValueError, "SOLUTION_FILE is expected to be a string or boolean"
+        ):
+            check_file_parameters(conf)
+
+
+class TestGetBaseName(unittest.TestCase):
+    def test_get_base_name(self):
+        sol = get_base_name("instance.mps")
+        self.assertEqual(sol, "instance")
+
+        sol = get_base_name("instance")
+        self.assertEqual(sol, "instance")
+
+        path_name = os.path.join("instance-dir", "instance.mps")
+        sol = get_base_name(path_name)
+        self.assertEqual(sol, "instance")
+
+        path_name = os.path.join("instance-dir", "instance")
+        sol = get_base_name(path_name)
+        self.assertEqual(sol, "instance")
 
 
 class TestConfigLoader(unittest.TestCase):

@@ -29,6 +29,9 @@ class DebugInfo:
             self.max_iter = index.iteration
 
     def export_csv(self, file_name, compress):
+        if file_name is None:
+            return
+
         csv = self.get_csv()
         if compress:
             csv = bytes(csv, "UTF-8")
@@ -89,6 +92,9 @@ class Solution:
         return np.array(list_vals)
 
     def save_as_sol_file(self, file_name):
+        if file_name is None:
+            return
+
         file_name = get_solution_file_name(file_name)
 
         with open(file_name, "w") as file:

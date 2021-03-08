@@ -2,6 +2,8 @@
 
 # Copyright (c) 2019 Filippo Ranza <filipporanza@gmail.com>
 
+import os
+
 from yaml import safe_load
 
 
@@ -16,14 +18,14 @@ DEFAULT_CONF = {
     "BUCKET_CONF": {"size": 10},
     "PRELOAD": True,
     "LOG": False,
-    "DEBUG": "",
     "KERNEL_SORTER": "base_kernel_sort",
     "KERNEL_SORTER_CONF": {},
     "BUCKET_SORTER": "base_bucket_sort",
     "BUCKET_SORTER_CONF": {},
     "ITERATIONS": 1,
     "PRESOLVE": False,
-    "VARIABLE_RANKING": False
+    "VARIABLE_RANKING": False,
+    "INSTANCE": "",
 }
 
 
@@ -39,6 +41,52 @@ def check_config(conf):
         raise ValueError(
             f"'TIME_LIMIT' and 'GLOBAL_TIME_LIMIT' cannot be set at the same time: only one of them is allowed in a given configuration"
         )
+
+    check_file_parameters(conf)
+
+
+def get_base_name(instance):
+    base_name = os.path.basename(instance)
+    index = base_name.rfind(".")
+    if index == -1:
+        return base_name
+    else:
+        return base_name[:index]
+
+
+def check_file_parameters(conf):
+    instance = conf.get("INSTANCE")
+    if instance:
+        base_name = get_base_name(instance)
+
+    if debug := conf.get("DEBUG"):
+        if isinstance(debug, bool):
+            if instance:
+                if debug:
+                    conf["DEBUG"] = base_name + "-run.csv"
+            else:
+                raise ValueError(
+                    "cannot set debug file name without an instance name in config file"
+                )
+        elif not isinstance(debug, str):
+            raise ValueError("DEBUG is expected to be a string or boolean")
+    else:
+        conf["DEBUG"] = None
+
+    if sol := conf.get("SOLUTION_FILE"):
+        if isinstance(sol, bool):
+            if instance:
+                if sol:
+                    conf["SOLUTION_FILE"] = base_name + "-sol.sol"
+            else:
+                raise ValueError(
+                    "cannot set solution file name without an instance name in config file"
+                )
+
+        elif not isinstance(sol, str):
+            raise ValueError("SOLUTION_FILE is expected to be a string or boolean")
+    else:
+        conf["SOLUTION_FILE"] = None
 
 
 def load_config(file_name):

@@ -235,7 +235,6 @@ def solve_buckets(instance, iteration):
                 unselect_vars(instance.kernel, buck)
             instance.var_score.failure_update_score(instance.kernel, buck)
 
-
         if check_time_out(instance):
             break
 
@@ -349,7 +348,7 @@ def kernel_search(mps_file, config, kernel_methods):
             config,
             worst_sol,
             callback,
-            var_score
+            var_score,
         )
         curr_sol, curr_best = solve_buckets(instance, i)
         best_sol = get_best_solution(curr_best, best_sol, main_model)

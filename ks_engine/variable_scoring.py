@@ -31,7 +31,6 @@ class AbstactVariableScoring:
         raise NotImplementedError
 
 
-
 class ReducedCostScoring(AbstactVariableScoring):
     def success_update_score(self, curr_kernel, curr_bucket):
         pass
@@ -60,7 +59,6 @@ class VariableRanking(AbstactVariableScoring):
                 self.score[var] += 1
             else:
                 self.score[var] -= 1
-
 
 
 def callback_factory(scoring: AbstactVariableScoring):
