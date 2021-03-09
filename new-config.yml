@@ -1,8 +1,8 @@
 PRELOAD: on
 LOG: off
-BUCKET: 'fixed'
+BUCKET: 'decrease'
 BUCKET_CONF:
-  count: 5
+  count: 6
 BUCKET_SORTER: cheb_bucket_sort
 ITERATIONS: 10
 TIME_LIMIT: 10

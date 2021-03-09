@@ -8,7 +8,7 @@ from ks_engine import *
 
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument("mps", help="Instance MPS file", nargs='?')
+    parser.add_argument("mps", help="Instance MPS file", nargs="?")
 
     exclusive_group = parser.add_mutually_exclusive_group(required=True)
 
@@ -23,6 +23,7 @@ def parse_args():
     )
 
     return parser.parse_args()
+
 
 def initialize_algorithm(conf):
     bucket_gen = bucket_builders.get_algorithm(conf["BUCKET"])
@@ -39,14 +40,15 @@ def initialize_algorithm(conf):
     )
     return algo
 
+
 def run_kernel_search(mps, config):
     conf = load_config(config)
     mps = get_instance_file(mps, conf)
-    
+
     algo = initialize_algorithm(conf)
-    
+
     sol = kernel_search(mps, conf, algo)
-    
+
     if sol is None:
         print("Cannot find a solution")
     else:
@@ -68,14 +70,14 @@ def evaluate_solution(mps, solution):
 def get_instance_file(mps, config):
     if mps:
         return mps
-    elif mps := config.get('INSTANCE'):
+    elif mps := config.get("INSTANCE"):
         return mps
     else:
         raise ValueError("instance file is required from CLI or from config file")
 
 
 def solve_instance(args):
-    try: 
+    try:
         run_kernel_search(args.mps, args.config)
     except ValueError as err:
         print("Fatal exception: Value Error")

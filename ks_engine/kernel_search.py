@@ -270,6 +270,24 @@ def distill_kernel(kernel, sol, null=0):
             kernel[k] = False
 
 
+def new_buckets(kernel, score, methods, config):
+    try:
+        buckets = methods.bucket_builder(
+            kernel,
+            score,
+            methods.bucket_sort,
+            config["BUCKET_SORTER_CONF"],
+            **config["BUCKET_CONF"],
+        )
+    except ValueError as err:
+        print("Error while computing new buckets:")
+        print(err)
+        print("Stop Kernel Search Now")
+        buckets = None
+
+    return buckets
+
+
 def kernel_search(mps_file, config, kernel_methods):
     """
     Run Kernel Search Heuristic
@@ -350,14 +368,7 @@ def kernel_search(mps_file, config, kernel_methods):
             callback,
             var_score,
         )
-        try:
-            curr_sol, curr_best = solve_buckets(instance, i)
-        except ValueError as err:
-            print("Error:")
-            print(err)
-            print("Stop now")
-            break
-
+        curr_sol, curr_best = solve_buckets(instance, i)
 
         best_sol = get_best_solution(curr_best, best_sol, main_model)
         print(f"{best_sol=} {curr_sol=} {prev=}")
@@ -378,16 +389,10 @@ def kernel_search(mps_file, config, kernel_methods):
         if config.get("DISTILL") and curr_sol is not None:
             distill_kernel(base_kernel, curr_sol)
 
-        
         if curr_sol:
-            buckets = kernel_methods.bucket_builder(
-                base_kernel,
-                var_score,
-                kernel_methods.bucket_sort,
-                config["BUCKET_SORTER_CONF"],
-                **config["BUCKET_CONF"],
-            )
-            
+            buckets = new_buckets(base_kernel, var_score, kernel_methods, config)
+            if buckets is None:
+                break
 
         if check_time_out(instance):
             break
